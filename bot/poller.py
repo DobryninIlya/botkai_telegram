@@ -14,13 +14,16 @@ class Poller:
         self._task: Optional[Task] = None
 
     async def _worker(self):
-        offset = 0
-        while True:
-            res = await self.tg_client.get_updates_in_objects(offset=offset, timeout=60)
-            for u in res['result']:
-                offset = u['update_id'] + 1
-                print(u)  # deleteafter
-                self.queue.put_nowait(u)
+        try:
+            offset = 0
+            while True:
+                res = await self.tg_client.get_updates_in_objects(offset=offset, timeout=60)
+                for u in res['result']:
+                    offset = u['update_id'] + 1
+                    print(u)  # deleteafter
+                    self.queue.put_nowait(u)
+        except:
+            print('Ошибка:\n', traceback.format_exc())
 
     async def start(self):
         self._task = asyncio.create_task(self._worker())
