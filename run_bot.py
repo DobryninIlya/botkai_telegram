@@ -1,6 +1,7 @@
 import asyncio
 import datetime
 import os
+import traceback
 
 from bot.base import Bot
 
@@ -17,7 +18,7 @@ def run():
         print("\nstopping", datetime.datetime.now())
         loop.run_until_complete(bot.stop())
         print('bot has been stopped', datetime.datetime.now())
-
-
+    except:
+        print('Ошибка (глобальная):\n', traceback.format_exc())
 if __name__ == '__main__':
     run()
