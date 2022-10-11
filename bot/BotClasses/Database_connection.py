@@ -7,7 +7,10 @@ class database_connections:
         self.connection = psycopg2.connect(dbname=os.getenv('DB_NAME'), user= os.getenv('DB_USER'), password= os.getenv('DB_PASSWORD'), host= os.getenv('DB_HOST'))
         self.connection.autocommit = True
         self.cursor = self.connection.cursor()
-        self.conn = sqlite3.connect("bot\\BotClasses\\bot.db")
+        try:
+            self.conn = sqlite3.connect("bot\\BotClasses\\bot.db")
+        except:
+            self.conn = sqlite3.connect("botraspisanie\\botkai_telegrambot\\BotClasses\\bot.db")
         self.cursorR = self.conn.cursor()
 
 
