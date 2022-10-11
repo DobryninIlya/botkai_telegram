@@ -1,0 +1,4 @@
+aiogram~=2.22.2
+aiohttp~=3.8.3
+datetime
+json
