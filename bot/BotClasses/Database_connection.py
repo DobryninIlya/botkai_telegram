@@ -1,3 +1,5 @@
+import traceback
+
 import psycopg2
 import os
 import sqlite3
@@ -11,6 +13,8 @@ class database_connections:
             self.conn = sqlite3.connect("bot\\BotClasses\\bot.db")
         except:
             self.conn = sqlite3.connect("botraspisanie\\botkai_telegram\\bot\\BotClasses\\bot.db")
+            print('Ошибка:\n', traceback.format_exc())
+        print(self.conn)
         self.cursorR = self.conn.cursor()
 
 
