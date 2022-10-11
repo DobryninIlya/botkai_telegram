@@ -6,7 +6,7 @@ from aiogram.types import ReplyKeyboardMarkup, KeyboardButton
 
 def load_modules():
     try:
-        files = os.listdir("/app/botkai/commands")
+        files = os.listdir("/botraspisanie/botkai_telegram/bot/commands")
     except:
         files = os.listdir("bot/commands")
     modules = filter(lambda x: x.endswith('.py'), files)
