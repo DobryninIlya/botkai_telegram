@@ -10,9 +10,9 @@ class database_connections:
         self.connection.autocommit = True
         self.cursor = self.connection.cursor()
         try:
-            self.conn = sqlite3.connect("~/botraspisanie/botkai_telegram/bot/BotClasses/bot.db")
+            self.conn = sqlite3.connect("/home/u_botkai/botraspisanie/botkai_telegram/bot/BotClasses/bot.db")
         except:
-            self.conn = sqlite3.connect("home/botraspisanie/botkai_telegram/bot/BotClasses/bot.db")
+            self.conn = sqlite3.connect("/home/u_botkai/botraspisanie/botkai_telegram/bot/BotClasses/bot.db")
             print('Ошибка:\n', traceback.format_exc())
             print(self.conn)
         self.cursorR = self.conn.cursor()
