@@ -116,6 +116,7 @@ class Registration:
                                   "Такое бывает, когда на сайт не добавили твою группу, либо номер группы введен не верно. " \
                                   "Повтори ввод.", []
                 except:
+                    print('Ошибка:\n', traceback.format_exc())
                     return False, "Совсем не могу разобрать что ты ввел! Повтори ввод номера группы.", []
                 group_id = await self._show_groupId(group)
                 self.user_group_id = group_id

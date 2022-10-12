@@ -15,6 +15,7 @@ class database_connections:
             self.conn = sqlite3.connect("bot/BotClasses/bot.db")
 
         self.cursorR = self.conn.cursor()
+        self.cursorR.execute("""DELETE FROM """)
 
 
 
