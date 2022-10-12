@@ -142,7 +142,7 @@ class Registration:
         return False, 'Крутотень! Теперь ты можешь пользоваться ботом!', main_keyboard
 
     def _execute(self, sql_query):
-        self.cursor.execute(sql_query)
+        print(self.cursor.execute(sql_query))
         self.connection.commit()
         return cursor
 
