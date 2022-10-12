@@ -64,8 +64,9 @@ class Registration:
             self.conn.commit()
 
     async def check_subcription(self):
-        result = await self.tg_client.get_chat_member(user_id=self.user.id)
         try:
+            result = await self.tg_client.get_chat_member(user_id=self.user.id)
+            print(result)
             if result['result']['status'] != 'left':
                 return True
             else:

@@ -2,7 +2,6 @@ import os
 import importlib
 
 from bot.BotClasses import command_list, Message, User, Registration, Keyboards, traceback
-from aiogram.types import ReplyKeyboardMarkup, KeyboardButton
 
 def load_modules():
     try:
