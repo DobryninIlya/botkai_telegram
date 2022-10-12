@@ -1,7 +1,7 @@
 import os
 import importlib
 
-from bot.BotClasses import command_list, Message, User, Registration, Keyboards
+from bot.BotClasses import command_list, Message, User, Registration, Keyboards, traceback
 from aiogram.types import ReplyKeyboardMarkup, KeyboardButton
 
 def load_modules():
@@ -9,6 +9,7 @@ def load_modules():
         files = os.listdir('/home/u_botkai/botraspisanie/botkai_telegram/bot/commands')
 
     except:
+        print('Ошибка:\n', traceback.format_exc())
         files = os.listdir("bot/commands")
     modules = filter(lambda x: x.endswith('.py'), files)
     for m in modules:
