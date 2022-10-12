@@ -12,9 +12,8 @@ class database_connections:
         try:
             self.conn = sqlite3.connect("/home/u_botkai/botraspisanie/botkai_telegram/bot/BotClasses/bot.db")
         except:
-            self.conn = sqlite3.connect("/home/u_botkai/botraspisanie/botkai_telegram/bot/BotClasses/bot.db")
-            print('Ошибка:\n', traceback.format_exc())
-            print(self.conn)
+            self.conn = sqlite3.connect("bot/BotClasses/bot.db")
+
         self.cursorR = self.conn.cursor()
 
 

@@ -6,9 +6,7 @@ from bot.BotClasses import command_list, Message, User, Registration, Keyboards,
 def load_modules():
     try:
         files = os.listdir('/home/u_botkai/botraspisanie/botkai_telegram/bot/commands')
-
     except:
-        print('Ошибка:\n', traceback.format_exc())
         files = os.listdir("bot/commands")
     modules = filter(lambda x: x.endswith('.py'), files)
     for m in modules:

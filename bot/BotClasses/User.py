@@ -6,7 +6,10 @@ class User:
         self.id = update.from_id
         self.name = update.first_name
         self.lastname = update.last_name
-        self.username = update.username
+        try:
+            self.username = update.username
+        except:
+            pass
         self.role = None
         self.admLevel = 0
         self.is_verificated = False
