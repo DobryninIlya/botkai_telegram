@@ -6,6 +6,7 @@ import sqlite3
 
 class database_connections:
     def __init__(self):
+        print(os.getenv('DB_NAME'), os.getenv('DB_USER'), os.getenv('DB_PASSWORD'), os.getenv('DB_HOST'))
         self.connection = psycopg2.connect(dbname=os.getenv('DB_NAME'), user= os.getenv('DB_USER'), password= os.getenv('DB_PASSWORD'), host= os.getenv('DB_HOST'))
         self.connection.autocommit = True
         self.cursor = self.connection.cursor()
