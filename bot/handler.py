@@ -3,6 +3,7 @@ import importlib
 
 from bot.BotClasses import command_list, Message, User, Registration, Keyboards, traceback
 
+
 def load_modules():
     try:
         files = os.listdir('/home/u_botkai/botraspisanie/botkai_telegram/bot/commands')
@@ -42,7 +43,7 @@ def damerau_levenshtein_distance(s1, s2):
 
 async def message_handler(update, tg_client):
     message = Message(update)
-    if not message == None or not message.message:
+    if not message or not message.message:
         return
     user = User(message)
     registration = Registration(user, message, tg_client)
@@ -66,7 +67,9 @@ async def message_handler(update, tg_client):
                     if distance == 0 and c.admlevel <= user.admLevel and (user.role in c.role):
                         await c.process(user, message, tg_client)
                         return
-    if distance < len(message.text.lower()) * 0.4 and command.admlevel <= user.admLevel and user.role in command.role and message.text[1]!='/':
+    if distance < len(
+            message.text.lower()) * 0.4 and command.admlevel <= user.admLevel and user.role in command.role and \
+            message.text[1] != '/':
         msg = 'Я понял ваш запрос как "%s"' % key
         await tg_client.send_message(user.id, msg, buttons=Keyboards.main_keyboard)
         await command.process(user, message, tg_client)
