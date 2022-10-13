@@ -42,6 +42,8 @@ def damerau_levenshtein_distance(s1, s2):
 
 async def message_handler(update, tg_client):
     message = Message(update)
+    if not message == None or not message.message:
+        return
     user = User(message)
     registration = Registration(user, message, tg_client)
     result, answer, keyboard = await registration.processing()

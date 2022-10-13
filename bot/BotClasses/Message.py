@@ -1,10 +1,15 @@
 class Message:
     def __init__(self, update):
-        self.message = update['message']
+        if 'message' in update['message']['from'].keys():
+            self.message = update['message']['from']['message']
+        else:
+            self.message = None
+            return None
         self.message_id = self.message['message_id']
         self.from_id = self.message['from']['id']
         self.is_bot = self.message['from']['is_bot']
         self.first_name = self.message['from']['first_name']
+
         if 'lastname' in self.message['from'].keys():
             self.last_name = self.message['from']['last_name']
         else:
