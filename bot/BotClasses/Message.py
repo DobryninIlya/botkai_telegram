@@ -1,7 +1,7 @@
 class Message:
     def __init__(self, update):
-        if 'message' in update['message']['from'].keys():
-            self.message = update['message']['from']['message']
+        if 'message' in update.keys():
+            self.message = update['message']
         else:
             self.message = None
             return None
