@@ -24,7 +24,6 @@ class Poller:
                     self.queue.put_nowait(u)
         except:
             print('Ошибка:\n', traceback.format_exc())
-            print(res)
 
     async def start(self):
         self._task = asyncio.create_task(self._worker())
