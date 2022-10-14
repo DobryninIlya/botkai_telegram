@@ -169,9 +169,11 @@ class StudentShedule:
             if not isNormal:
                 return response
             if tomorrow == -1:
-                return self._get_week_shedule(response)
+                return self._get_week_shedule(response) # Расписание по дню недели
             elif tomorrow == -2:
-                return self._get_teacher_list(response)
+                return self._get_teacher_list(response) # Список преподов
+            elif tomorrow == -3:
+                return True if (self.today.isocalendar()[1] + self.chetn % 2) == 0 else False # Четность недели
             now = datetime.date.today() + datetime.timedelta(days=tomorrow)
             response = response[str(datetime.date(now.year, now.month, now.day).isoweekday())]
             result = ''

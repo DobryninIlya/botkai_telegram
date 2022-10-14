@@ -66,7 +66,6 @@ class Registration:
     async def check_subcription(self):
         try:
             result = await self.tg_client.get_chat_member(user_id=self.user.id)
-            print(result)
             if result['result']['status'] != 'left':
                 return True
             else:
@@ -82,7 +81,6 @@ class Registration:
             return True, '', main_keyboard
         if not in_base:
             status = self._get_status_code()
-            print("STATUS CODE IS: ", status)
             if not status:
                 self._set_status(1)
                 return False, "В моем мире 4 гендера! Выберите вашу роль (Студент, Родитель, Преподаватель, Абитуриент)\n" \
@@ -142,14 +140,13 @@ class Registration:
         return False, 'Крутотень! Теперь ты можешь пользоваться ботом!', main_keyboard
 
     def _execute(self, sql_query):
-        print(self.cursor.execute(sql_query))
+        self.cursor.execute(sql_query)
         self.connection.commit()
         return cursor
 
     def _check_in_base(self):
         sql = "SELECT * FROM tg_users WHERE id={}".format(self.id)
         result = self._execute(sql).fetchall()
-        print(result)
         if result:
             return True
         else:

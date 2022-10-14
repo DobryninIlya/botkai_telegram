@@ -74,4 +74,4 @@ async def message_handler(update, tg_client):
         await tg_client.send_message(user.id, msg, buttons=Keyboards.main_keyboard)
         await command.process(user, message, tg_client)
         return
-    await tg_client.send_message(user.id, "Я не понимаю тебя :(")
+    await tg_client.send_message(user.id, "Я не понимаю тебя :(", buttons=Keyboards.main_keyboard)

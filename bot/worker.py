@@ -29,7 +29,7 @@ class Worker:
                 self.tg_client.send_message(393867797, str(traceback.format_exc()))
             finally:
                 self.queue.task_done()
-                raise SystemExit
+
 
     async def start(self):
         self._tasks = [asyncio.create_task(self._worker()) for _ in range(self.concurrent_workers)]

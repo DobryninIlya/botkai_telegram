@@ -29,7 +29,13 @@ async def processor(user: User, message: Message, tg_client: TgClient):
         day_count = -1
     elif text in ['преподаватели', 'мои преподаватели', 'преподы']:
         day_count = -2
+    elif text in ['четность', 'какая неделя', 'какая сейчас неделя', 'четность недели']:
+        day_count = -3
     shedule = await StudentShedule(user, message).showTimetable(user.group_id, day_count)
+    if day_count == -3:
+        msg = 'Четная' if shedule else 'Нечетная'
+        await tg_client.send_message(user.id, msg, buttons=Keyboards.main_keyboard)
+        return
     if shedule:
         try:
             if day_count == -2:
@@ -51,7 +57,8 @@ command.keys = ['на завтра', 'расписание на завтра', '
                 'на сегодня', 'расписание на сегодня', 'сегодня', 'today',
                 'на послезавтра', 'расписание на послезавтра', 'послезавтра', 'afterday',
                 'полностью', 'расписание полностью', 'shedule',
-                'преподаватели', 'мои преподаватели', 'преподы'
+                'преподаватели', 'мои преподаватели', 'преподы',
+                'четность', 'какая неделя', 'какая сейчас неделя', 'четность недели'
                 ]
 command.process = processor
 command.role = [1]

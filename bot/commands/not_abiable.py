@@ -13,7 +13,7 @@ async def processor(user: User, message: Message, tg_client: TgClient):
 
 command = command_class()
 
-command.keys = ["четность недели", "задания и объявления",
+command.keys = ["задания и объявления",
                 "разное",
                 "обратная связь", "профиль"
                 ]
