@@ -23,7 +23,7 @@ class Poller:
                         offset = u['update_id'] + 1
                         self.queue.put_nowait(u)
             except:
-                print('Ошибка:\n', traceback.format_exc())
+                pass
 
     async def start(self):
         self._task = asyncio.create_task(self._worker())

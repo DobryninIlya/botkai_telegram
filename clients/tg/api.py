@@ -67,6 +67,7 @@ class TgClient:
 
         keyboard = {
             'resize_keyboard': False,
+            'one_time_keyboard ': True,
             'keyboard': buttons
 
         }
