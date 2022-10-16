@@ -200,7 +200,7 @@ class StudentShedule:
                 }
                 dateinstr = str((elem["dayDate"]).rstrip()).find(day)
 
-                if (self.today.isocalendar()[1] + self.chetn % 2) == 0:  # Если неделя четная
+                if (self.now.isocalendar()[1] + self.chetn % 2) == 0:  # Если неделя четная
                     chetn = True
                 else:
                     chetn = False
