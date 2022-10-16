@@ -5,6 +5,7 @@ import aiohttp
 import datetime
 import json
 
+from pprint import pprint
 from .User import User
 from .Message import Message
 from .Database_connection import cursor, connection, cursorR, conn
@@ -199,14 +200,15 @@ class StudentShedule:
                     'disciplType': elem["disciplType"][:4].rstrip()
                 }
                 dateinstr = str((elem["dayDate"]).rstrip()).find(day)
-
-                if (now.isocalendar()[1] + self.chetn % 2) == 0:  # Если неделя четная
+                # print((self.today.isocalendar()[1] + self.chetn) % 2, self.today.isocalendar()[1])
+                if ((now.isocalendar()[1] + self.chetn) % 2) == 0:  # Если неделя четная
                     chetn = True
                 else:
                     chetn = False
                 if dayDate == 'чет' and chetn:
                     para_list.append(para_structure)
                 elif dayDate == 'неч' and not chetn:
+                    print("нечетная пара")
                     para_list.append(para_structure)
                 elif dayDate == 'чет\неч' and chetn or dayDate == 'неч\чет' and not chetn:
                     para_structure['dayDate'] = "1️гр. " + para_structure['dayDate']
