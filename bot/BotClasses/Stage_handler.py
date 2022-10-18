@@ -6,7 +6,6 @@ import aiohttp
 
 from .User import User
 from .Message import Message
-from .Keyboards import registration_role, main_keyboard
 from .Database_connection import cursor, connection, cursorR, conn
 
 

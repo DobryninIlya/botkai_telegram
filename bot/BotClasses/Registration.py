@@ -6,7 +6,7 @@ import aiohttp
 
 from .User import User
 from .Message import Message
-from .Keyboards import registration_role, main_keyboard
+from .Keyboards import keyboard
 from .Database_connection import cursor, connection, cursorR, conn
 
 status_list = []
@@ -75,9 +75,9 @@ class Registration:
     async def processing(self):
         in_base = self._check_in_base()
         if not await self.check_subcription():
-            return False, 'Чтобы пользоваться ботом, вам необходимо подписаться на канал! @botkainews', registration_role
+            return False, 'Чтобы пользоваться ботом, вам необходимо подписаться на канал! @botkainews', keyboard('registration_role', self.user).get_keyboard()
         if in_base:
-            return True, '', main_keyboard
+            return True, '', keyboard('main_keyboard', self.user).get_keyboard()
         if not in_base:
             status = self._get_status_code()
             if not status:
@@ -85,17 +85,17 @@ class Registration:
                 return False, "В моем мире 4 гендера! Выберите вашу роль (Студент, Родитель, Преподаватель, Абитуриент)\n" \
                               "Чтобы узнать больше о ролях введите Справка в чат." \
                               "Помни, неправильное самоопределение может навредить тебе." \
-                              "[Недоступно] Также вы можете авторизоваться через личный кабинет (рекомендуется)", registration_role
+                              "[Недоступно] Также вы можете авторизоваться через личный кабинет (рекомендуется)", keyboard('registration_role', self.user).get_keyboard()
 
             if status == 1:
                 role = self.message.text.lower()
                 if not role in ['студент', 'родитель', 'преподаватель', 'абитуреиент']:
-                    return False, "К сожалению, я не понял тебя! Выбери свою роль (Студент, Родитель, Преподаватель, Абитуриент)!", registration_role
+                    return False, "К сожалению, я не понял тебя! Выбери свою роль (Студент, Родитель, Преподаватель, Абитуриент)!", keyboard('registration_role', self.user).get_keyboard()
                 if role == "студент":
                     self._set_status(11)
-                    return False, 'Отлично! Теперь введи номер своей группы', []
+                    return False, 'Отлично! Теперь введи номер своей группы', keyboard([], self.user).get_keyboard()
                 else:
-                    return False, 'К сожалению, для этой категории регистрация временно закрыта :(. ', registration_role
+                    return False, 'К сожалению, для этой категории регистрация временно закрыта :(. ', keyboard('registration_role', self.user).get_keyboard()
 
             if status == 11:
                 group = self.message.text
@@ -107,20 +107,20 @@ class Registration:
                     if not group_id:
                         raise TypeError
                 except AssertionError:
-                    return False, "Ты ввел некорректный номер группы. Повтори ввод номера группы.", []
+                    return False, "Ты ввел некорректный номер группы. Повтори ввод номера группы.", keyboard([], self.user).get_keyboard()
                 except TypeError:
                     return False, "К сожалению, мне не удалось получить параметры твоей группы с сайта...\n" \
                                   "Такое бывает, когда на сайт не добавили твою группу, либо номер группы введен не верно. " \
-                                  "Повтори ввод.", []
+                                  "Повтори ввод.", keyboard(None, self.user).get_keyboard()
                 except:
                     print('Ошибка:\n', traceback.format_exc())
-                    return False, "Совсем не могу разобрать что ты ввел! Повтори ввод номера группы.", []
+                    return False, "Совсем не могу разобрать что ты ввел! Повтори ввод номера группы.", keyboard([], self.user).get_keyboard()
                 group_id = await self._show_groupId(group)
                 self.user_group_id = group_id
                 self.user_group_name = group
                 return self._save_user(1)
 
-        return False, "[регистрация]: Произошла ошибка :( Отправь скрин разработчику <З", registration_role
+        return False, "[регистрация]: Произошла ошибка :( Отправь скрин разработчику <З", keyboard('registration_role', self.user).get_keyboard()
 
     def _save_user(self, role_id):
         sql = "INSERT INTO tg_users VALUES ({id}, '{name}', '{lastname}', '{username}', {role}, {admLevel}, {is_verificated}, {groupname}, {groupid})".format(
@@ -136,7 +136,7 @@ class Registration:
         )
         self._execute(sql)
         self._set_status(None)
-        return False, 'Крутотень! Теперь ты можешь пользоваться ботом!', main_keyboard
+        return False, 'Крутотень! Теперь ты можешь пользоваться ботом!', keyboard('main_keyboard', self.user).get_keyboard()
 
     def _execute(self, sql_query):
         self.cursor.execute(sql_query)

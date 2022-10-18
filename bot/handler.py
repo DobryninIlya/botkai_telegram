@@ -1,7 +1,8 @@
 import os
 import importlib
 
-from bot.BotClasses import command_list, Message, User, Registration, Keyboards, traceback
+from bot.BotClasses import command_list, Message, User, Registration, traceback
+from bot.BotClasses.Keyboards import keyboard
 
 
 def load_modules():
@@ -42,14 +43,17 @@ def damerau_levenshtein_distance(s1, s2):
 
 
 async def message_handler(update, tg_client):
+    if 'callback_query' in update.keys():
+        print(update)
+        return
     message = Message(update)
     if not message:
         return
     user = User(message)
     registration = Registration(user, message, tg_client)
-    result, answer, keyboard = await registration.processing()
+    result, answer, keyboard_answer = await registration.processing()
     if not result:
-        await tg_client.send_message(user.id, answer, buttons=keyboard)
+        await tg_client.send_message(user.id, answer, buttons=keyboard_answer)
         return
     if message.text[0] == '/':  # Remove slash
         message.text = message.text[1:]
@@ -71,7 +75,7 @@ async def message_handler(update, tg_client):
             message.text.lower()) * 0.4 and command.admlevel <= user.admLevel and user.role in command.role and \
             message.text[1] != '/':
         msg = 'Я понял ваш запрос как "%s"' % key
-        await tg_client.send_message(user.id, msg, buttons=Keyboards.main_keyboard)
+        await tg_client.send_message(user.id, msg, buttons=keyboard('main_keyboard', user).get_keyboard())
         await command.process(user, message, tg_client)
         return
-    await tg_client.send_message(user.id, "Я не понимаю тебя :(", buttons=Keyboards.main_keyboard)
+    await tg_client.send_message(user.id, "Я не понимаю тебя :(", buttons=keyboard('main_keyboard', user).get_keyboard())

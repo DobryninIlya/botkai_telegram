@@ -1,7 +1,8 @@
 import random
 
 from ..BotClasses import Command as command_class, traceback
-from ..BotClasses import User, Message, StudentShedule, Keyboards
+from ..BotClasses import User, Message, StudentShedule
+from ..BotClasses.Keyboards import keyboard
 from clients.tg.api import TgClient
 
 
@@ -11,7 +12,7 @@ frazi = ["Можно сходить в кино 😚", "Можно почита�
          "Можно встретиться с друзьями 😚"]
 
 
-async def processor(user: User, message: Message, tg_client: TgClient):
+async def processor(user: User, message: Message, tg_client: TgClient, callback_query=False):
     day_count = 0
     text = message.text.lower()
     day_week = ''
@@ -34,7 +35,7 @@ async def processor(user: User, message: Message, tg_client: TgClient):
     shedule = await StudentShedule(user, message).showTimetable(user.group_id, day_count)
     if day_count == -3:
         msg = 'Четная' if shedule else 'Нечетная'
-        await tg_client.send_message(user.id, msg, buttons=Keyboards.main_keyboard)
+        await tg_client.send_message(user.id, msg, buttons=keyboard('main_keyboard', user).get_keyboard())
         return
     if shedule:
         try:
@@ -42,12 +43,12 @@ async def processor(user: User, message: Message, tg_client: TgClient):
                 msg = "Список преподавателей:\n{}".format(shedule[:3000])
             else:
                 msg = "Расписание на {}\n {}".format(day_week.lower(), shedule[:3000])
-            await tg_client.send_message(user.id, msg, buttons=Keyboards.main_keyboard)
+            await tg_client.send_message(user.id, msg, buttons=keyboard('main_keyboard', user).get_keyboard())
         except:
             print('Ошибка:\n', traceback.format_exc())
     else:
         msg = day_week + ' занятий нет 😎\n' + frazi[random.randint(0, len(frazi) - 1)]
-        await tg_client.send_message(user.id, msg, buttons=Keyboards.main_keyboard)
+        await tg_client.send_message(user.id, msg, buttons=keyboard('main_keyboard', user).get_keyboard())
     return
 
 

@@ -41,7 +41,7 @@ class TgClient:
                 'text': text
             }
             if buttons or type(buttons) == type([]):
-                payload['reply_markup'] = self.get_keyboard(buttons)
+                payload['reply_markup'] = buttons
             async with aiohttp.ClientSession() as session:
                 async with session.post(url, json=payload) as resp:
                     res_dict = await resp.json()
@@ -49,34 +49,7 @@ class TgClient:
         except:
             print('Ошибка:\n', traceback.format_exc())
 
-    # {"keyboard": [[{"text": "тест1"}]], "resize_keyboard": true}
-    def get_keyboard(self, buttons: list) -> list:
-        if not len(buttons):
-            keyboard = {
-                'remove_keyboard': True
-            }
-            keyboard = json.dumps(keyboard, ensure_ascii=False).encode('utf-8')
-            keyboard = str(keyboard.decode('utf-8'))
-            return keyboard
-        buttons_massive = []
-        for layer in buttons:
-            layer_massive = []
-            for button in layer:
-                layer_massive.append(self.get_button(button))
-            buttons_massive.append(layer_massive)
 
-        keyboard = {
-            'resize_keyboard': False,
-            'one_time_keyboard ': True,
-            'keyboard': buttons
-
-        }
-        keyboard = json.dumps(keyboard, ensure_ascii=False).encode('utf-8')
-        keyboard = str(keyboard.decode('utf-8'))
-        return keyboard
-
-    def get_button(self, text):
-        return {'text': text}
 
     async def get_chat_member(self, user_id: int) -> dict:
         url = self.get_url("getChatMember")
