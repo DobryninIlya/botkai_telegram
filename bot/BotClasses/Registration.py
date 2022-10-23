@@ -28,7 +28,7 @@ async def getGroupsResponse(groupNumber):
         return False, False
 
 class Registration:
-    def __init__(self, user: User, message: Message, tg_client):
+    def __init__(self, user: User, message: Message, tg_client, debug: bool):
 
         self.id = user.id
         self.message = message
@@ -40,6 +40,7 @@ class Registration:
         self.user_group_id = None
         self.user_group_name = None
         self.tg_client = tg_client
+        self.debug = debug
 
     def _get_status_code(self):
         sql = "SELECT Status FROM Status WHERE ID = {}".format(self.id)
@@ -63,6 +64,8 @@ class Registration:
             self.conn.commit()
 
     async def check_subcription(self):
+        if self.debug:
+            return True
         try:
             result = await self.tg_client.get_chat_member(user_id=self.user.id)
             if result['result']['status'] != 'left':

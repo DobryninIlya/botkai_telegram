@@ -32,13 +32,28 @@ profile = [
 
 feedback_create = [[['Продолжить', 'feedback_create']]]
 
+exit = [['Выход']]
+
+game_controls = [
+    ['.', 'UP', '.'],
+    ['LEFT', 'ATTACK', 'RIGHT'],
+    ['.', 'DOWN', '.'],
+    ]
+game_controls = [
+    [['.', 'none'], ['UP', 'game_UP'], ['.', 'none']],
+    [['LEFT', 'game_LEFT'], ['ATTACK', 'game_ATTACK'], ['RIGHT', 'game_RIGHT']],
+    [['.', 'none'], ['DOWN', 'game_DOWN'], ['exit', 'main_menu']]
+]
+game_over = [['с']]
 class keyboard:
-    def __init__(self, type_name: str, user: User):
+    def __init__(self, type_name: str, user: User, buttons: list = None):
         self.type_name = type_name
         self.buttons = []
         self.user = user
         if self.type_name == 'main_keyboard':
             self.buttons = main_keyboard
+        elif self.type_name == 'exit':
+            self.buttons = exit
         elif self.type_name == 'registration_role':
             self.buttons = registration_role
         elif self.type_name == 'feedback':
@@ -47,11 +62,19 @@ class keyboard:
             self.buttons = self.get_profile()
         elif self.type_name == 'feedback_create':
             self.buttons = feedback_create
+        elif self.type_name == 'game_map':
+            self.buttons = buttons
+        elif self.type_name == 'game_controls':
+            self.buttons = game_controls
+        elif self.type_name == 'game_over':
+            self.buttons = game_over
+
 
     def get_profile(self):
         self.profile = profile
         self.profile[0][0][0] = self.profile[0][0][0].format(self.user.group_name)
-        self.profile[5][0][0] = self.profile[5][0][0].format('Меню старосты' if self.user.role > 1 else 'Стать старостой')
+        self.profile[5][0][0] = self.profile[5][0][0].format(
+            'Меню старосты' if self.user.role > 1 else 'Стать старостой')
         return self.profile
 
     def get_inline_keyboard(self) -> dict:
@@ -85,7 +108,7 @@ class keyboard:
                 layer_massive.append(self.get_button(button))
             buttons_massive.append(layer_massive)
         keyboard = {
-            'resize_keyboard': False,
+            'resize_keyboard': True,
             'one_time': True,
             'keyboard': self.buttons
 

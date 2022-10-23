@@ -42,15 +42,14 @@ def damerau_levenshtein_distance(s1, s2):
     return d[lenstr1 - 1, lenstr2 - 1]
 
 
-async def message_handler(update, tg_client):
+async def message_handler(update, tg_client, debug=False):
     if 'callback_query' in update.keys():
         print(update)
-        return
     message = Message(update)
     if not message:
         return
     user = User(message)
-    registration = Registration(user, message, tg_client)
+    registration = Registration(user, message, tg_client, debug)
     result, answer, keyboard_answer = await registration.processing()
     if not result:
         await tg_client.send_message(user.id, answer, buttons=keyboard_answer)
@@ -61,6 +60,12 @@ async def message_handler(update, tg_client):
     command = None
     key = ''
     for c in command_list:
+        if message.callback_query_id:
+            print(message.button)
+            print(True if message.button in c.payload else False, ' ', message.button, ' ', c.payload)
+            if message.button in c.payload and user.role in c.role:
+                await c.process(user, message, tg_client, True)
+                return
         if user.role in c.role:
             for k in c.keys:
                 d = damerau_levenshtein_distance(message.text.lower(), k)

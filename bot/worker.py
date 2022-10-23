@@ -6,6 +6,7 @@ from typing import List
 from clients.tg.api import TgClient
 from bot.handler import message_handler
 
+
 # from clients.tg.dcs import UpdateObj
 
 
@@ -15,9 +16,10 @@ class Worker:
         self.queue = queue
         self.concurrent_workers = concurrent_workers
         self._tasks: List[asyncio.Task] = []
+        self.debug = True if token[1] == '5' else False
 
     async def handle_update(self, upd):
-        await message_handler(upd, self.tg_client)
+        await message_handler(upd, self.tg_client, self.debug)
 
     async def _worker(self):
         while True:
@@ -29,7 +31,6 @@ class Worker:
                 await self.tg_client.send_message(393867797, str(traceback.format_exc()))
             finally:
                 self.queue.task_done()
-
 
     async def start(self):
         self._tasks = [asyncio.create_task(self._worker()) for _ in range(self.concurrent_workers)]

@@ -49,7 +49,35 @@ class TgClient:
         except:
             print('Ошибка:\n', traceback.format_exc())
 
+    async def edit_message(self, chat_id: int, message_id: str, buttons, message:str):
+        try:
+            url = self.get_url("editMessageText")
+            payload = {
+                'chat_id': chat_id,
+                'message_id': message_id-1,
+                'text': message
+            }
+            if buttons or type(buttons) == type([]):
+                payload['reply_markup'] = buttons
+            async with aiohttp.ClientSession() as session:
+                async with session.post(url, json=payload) as resp:
+                    res_dict = await resp.json()
+                    return res_dict
+        except:
+            print('Ошибка:\n', traceback.format_exc())
 
+    async def answer_callback_query(self, callback_query_id: str):
+        try:
+            url = self.get_url("answerCallbackQuery")
+            payload = {
+                'callback_query_id': callback_query_id
+            }
+            async with aiohttp.ClientSession() as session:
+                async with session.post(url, json=payload) as resp:
+                    res_dict = await resp.json()
+                    return res_dict
+        except:
+            print('Ошибка:\n', traceback.format_exc())
 
     async def get_chat_member(self, user_id: int) -> dict:
         url = self.get_url("getChatMember")

@@ -14,6 +14,7 @@ class User:
         self.admLevel = 0
         self.is_verificated = False
 
+
         self._get_user_data()
 
     def _get_user_data(self):

@@ -8,8 +8,12 @@ from bot.base import Bot
 
 def run():
     loop = asyncio.get_event_loop()
-
-    bot = Bot(os.getenv("TG_TOKEN"), 2)
+    try:
+        if os.getenv("OS") == 'Windows_NT':  # test key
+            token = '5510894762:AAH40UTqeEDFlvzKyx7TpRO4_w_qlQYu04o'
+    except:
+        token = os.getenv("TG_TOKEN")
+    bot = Bot(token, 2)
     try:
         print('bot has been started')
         loop.create_task(bot.start())
@@ -20,5 +24,7 @@ def run():
         print('bot has been stopped', datetime.datetime.now())
     except:
         print('Ошибка (глобальная):\n', traceback.format_exc())
+
+
 if __name__ == '__main__':
     run()
