@@ -29,6 +29,7 @@ class Worker:
             except:
                 print('Ошибка:\n', traceback.format_exc())
                 await self.tg_client.send_message(393867797, str(traceback.format_exc()))
+                await self.tg_client.send_message(393867797, upd)
             finally:
                 self.queue.task_done()
 
