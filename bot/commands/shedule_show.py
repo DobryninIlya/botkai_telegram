@@ -12,7 +12,7 @@ frazi = ["Можно сходить в кино 😚", "Можно почита�
          "Можно встретиться с друзьями 😚"]
 
 
-async def processor(user: User, message: Message, tg_client: TgClient, callback_query=False):
+async def processor(user: User, message: Message, tg_client: TgClient, callback_query=False, stage=None):
     day_count = 0
     text = message.text.lower()
     day_week = ''

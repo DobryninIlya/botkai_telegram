@@ -8,6 +8,7 @@ class Command:
         self.payload = []
         self.admlevel = 0
         self.role = []
+        self.status_list = []
         self.premium = False
         command_list.append(self)
 

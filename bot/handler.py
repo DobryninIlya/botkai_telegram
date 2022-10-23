@@ -3,6 +3,7 @@ import importlib
 
 from bot.BotClasses import command_list, Message, User, Registration, traceback
 from bot.BotClasses.Keyboards import keyboard
+from bot.BotClasses.Stage_handler import Stage
 
 
 def load_modules():
@@ -43,8 +44,6 @@ def damerau_levenshtein_distance(s1, s2):
 
 
 async def message_handler(update, tg_client, debug=False):
-    if 'callback_query' in update.keys():
-        print(update)
     message = Message(update)
     if not message:
         return
@@ -56,17 +55,29 @@ async def message_handler(update, tg_client, debug=False):
         return
     if message.text[0] == '/':  # Remove slash
         message.text = message.text[1:]
+    stage = Stage(user, message)
+
+    if message.text.lower() == 'выход':
+        await tg_client.send_message(user.id, 'Главное меню',
+                                     buttons=keyboard('main_keyboard', user).get_keyboard())
+        stage._set_status(0)
+        return
+
     distance = len(message.text)
     command = None
     key = ''
+
     for c in command_list:
         if message.callback_query_id:
-            print(message.button)
-            print(True if message.button in c.payload else False, ' ', message.button, ' ', c.payload)
             if message.button in c.payload and user.role in c.role:
-                await c.process(user, message, tg_client, True)
+                await c.process(user, message, tg_client, True, stage=stage)
+                await tg_client.answer_callback_query(message.callback_query_id)
                 return
-        if user.role in c.role:
+        if stage.status:
+            if stage.status in c.status_list:
+                await c.process(user, message, tg_client, stage=stage)
+                return
+        if user.role in c.role and not message.callback_query_id:
             for k in c.keys:
                 d = damerau_levenshtein_distance(message.text.lower(), k)
                 if d < distance:
@@ -74,13 +85,15 @@ async def message_handler(update, tg_client, debug=False):
                     command = c
                     key = k
                     if distance == 0 and c.admlevel <= user.admLevel and (user.role in c.role):
-                        await c.process(user, message, tg_client)
+                        await c.process(user, message, tg_client, stage=stage)
                         return
     if distance < len(
             message.text.lower()) * 0.4 and command.admlevel <= user.admLevel and user.role in command.role and \
             message.text[1] != '/':
         msg = 'Я понял ваш запрос как "%s"' % key
         await tg_client.send_message(user.id, msg, buttons=keyboard('main_keyboard', user).get_keyboard())
-        await command.process(user, message, tg_client)
+        await command.process(user, message, tg_client, stage=stage)
+        return
+    if message.callback_query_id:
         return
     await tg_client.send_message(user.id, "Я не понимаю тебя :(", buttons=keyboard('main_keyboard', user).get_keyboard())

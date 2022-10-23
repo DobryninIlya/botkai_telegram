@@ -9,7 +9,7 @@ from clients.tg.api import TgClient
 game_list = []
 
 
-async def processor(user: User, message: Message, tg_client: TgClient, callback_query=False):
+async def processor(user: User, message: Message, tg_client: TgClient, callback_query=False, stage=None):
     print('игра', callback_query, message.callback_query_id)
     if not callback_query and not message.callback_query_id:
         game = EscapeGame(user)

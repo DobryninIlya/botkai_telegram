@@ -8,7 +8,7 @@ from bot.base import Bot
 
 def run():
     loop = asyncio.get_event_loop()
-    token = None
+    token = os.getenv("TG_TOKEN")
     try:
         if os.getenv("OS") == 'Windows_NT':  # test key
             token = '5510894762:AAH40UTqeEDFlvzKyx7TpRO4_w_qlQYu04o'

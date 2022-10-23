@@ -5,7 +5,7 @@ from ..BotClasses import User, Message, StudentShedule, Keyboards
 from clients.tg.api import TgClient
 
 
-async def processor(user: User, message: Message, tg_client: TgClient, callback_query=False):
+async def processor(user: User, message: Message, tg_client: TgClient, callback_query=False, stage=None):
     print(await tg_client.get_chat_member(user.id))
     return
 

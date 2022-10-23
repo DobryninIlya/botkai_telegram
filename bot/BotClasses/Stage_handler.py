@@ -10,7 +10,7 @@ from .Database_connection import cursor, connection, cursorR, conn
 
 
 class Stage:
-    def __init__(self, user: User, message: Message, tg_client):
+    def __init__(self, user: User, message: Message):
         self.user_id = 0
         self.message = message
         self.cursor = cursor
@@ -20,7 +20,7 @@ class Stage:
         self.user = user
         self.user_group_id = None
         self.user_group_name = None
-        self.tg_client = tg_client
+        self.status = self._get_status_code()
 
     def _execute(self, sql_query):
         self.cursor.execute(sql_query)
@@ -47,6 +47,3 @@ class Stage:
             self.cursorR.execute("UPDATE Status SET Status = {}".format(code))
         finally:
             self.conn.commit()
-
-    def handler(self):
-        pass

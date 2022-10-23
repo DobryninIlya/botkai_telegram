@@ -46,6 +46,8 @@ game_controls = [
 ]
 game_over = [['с']]
 
+group_change = [[['Изменить', 'group_change_commit']]]
+
 
 class keyboard:
     def __init__(self, type_name: str, user: User, buttons: list = None):
@@ -70,6 +72,8 @@ class keyboard:
             self.buttons = game_controls
         elif self.type_name == 'game_over':
             self.buttons = game_over
+        elif self.type_name == 'group_change':
+            self.buttons = group_change
 
     def get_profile(self):
         self.profile = profile

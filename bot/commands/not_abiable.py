@@ -6,7 +6,7 @@ from ..BotClasses.Keyboards import keyboard
 from clients.tg.api import TgClient
 
 
-async def processor(user: User, message: Message, tg_client: TgClient, callback_query=False):
+async def processor(user: User, message: Message, tg_client: TgClient, callback_query=False, stage=None):
     msg = '⛔ Данная команда временно недоступна 💤💤💤'
     await tg_client.send_message(user.id, msg, buttons=keyboard('main_keyboard', user).get_keyboard())
     return
