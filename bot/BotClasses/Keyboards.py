@@ -38,13 +38,15 @@ game_controls = [
     ['.', 'UP', '.'],
     ['LEFT', 'ATTACK', 'RIGHT'],
     ['.', 'DOWN', '.'],
-    ]
+]
 game_controls = [
     [['.', 'none'], ['UP', 'game_UP'], ['.', 'none']],
     [['LEFT', 'game_LEFT'], ['ATTACK', 'game_ATTACK'], ['RIGHT', 'game_RIGHT']],
     [['.', 'none'], ['DOWN', 'game_DOWN'], ['exit', 'main_menu']]
 ]
 game_over = [['с']]
+
+
 class keyboard:
     def __init__(self, type_name: str, user: User, buttons: list = None):
         self.type_name = type_name
@@ -68,7 +70,6 @@ class keyboard:
             self.buttons = game_controls
         elif self.type_name == 'game_over':
             self.buttons = game_over
-
 
     def get_profile(self):
         self.profile = profile
