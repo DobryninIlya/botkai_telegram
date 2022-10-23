@@ -174,7 +174,8 @@ class StudentShedule:
             elif tomorrow == -2:
                 return self._get_teacher_list(response) # Список преподов
             elif tomorrow == -3:
-                return True if (self.today.isocalendar()[1] + self.chetn % 2) == 0 else False # Четность недели
+                print(self.today.isocalendar()[1] + self.chetn % 2)
+                return True if (int(self.today.isocalendar()[1] + self.chetn) % 2) == 0 else False # Четность недели
             now = datetime.date.today() + datetime.timedelta(days=tomorrow)
             response = response[str(datetime.date(now.year, now.month, now.day).isoweekday())]
             result = ''
