@@ -26,16 +26,16 @@ async def processor(user: User, message: Message, tg_client: TgClient, callback_
             game = game_
     if message.button == 'game_UP':
         game.move('up')
-        await tg_client.edit_message(user.id, message.message_id, buttons=game.get_map(), message='Движение: вверх')
+        await tg_client.edit_message(user.id, message.message_id-1, buttons=game.get_map(), message='Движение: вверх')
     elif message.button == 'game_DOWN':
         game.move('down')
-        await tg_client.edit_message(user.id, message.message_id, buttons=game.get_map(), message='Движение: вниз')
+        await tg_client.edit_message(user.id, message.message_id-1, buttons=game.get_map(), message='Движение: вниз')
     elif message.button == 'game_LEFT':
         game.move('left')
-        await tg_client.edit_message(user.id, message.message_id, buttons=game.get_map(), message='Движение: влево')
+        await tg_client.edit_message(user.id, message.message_id-1, buttons=game.get_map(), message='Движение: влево')
     elif message.button == 'game_RIGHT':
         game.move('right')
-        await tg_client.edit_message(user.id, message.message_id, buttons=game.get_map(), message='Движение: вправо')
+        await tg_client.edit_message(user.id, message.message_id-1, buttons=game.get_map(), message='Движение: вправо')
     elif message.button == 'game_ATTACK':
         result = game.attack()
         print('result: ', result)
@@ -43,12 +43,12 @@ async def processor(user: User, message: Message, tg_client: TgClient, callback_
             balance = game.game_over()
             msg = f'Все враги убиты. Вы заработали: {balance}'
             print(msg)
-            await tg_client.edit_message(user.id, message.message_id, buttons=game.get_map(game_over=True), message=msg)
+            await tg_client.edit_message(user.id, message.message_id-1, buttons=game.get_map(game_over=True), message=msg)
             game_list.remove(game)
             del game
         else:
             msg = 'Атака: ' + str(game.user.attack)
-            await tg_client.edit_message(user.id, message.message_id, buttons=game.get_map(), message=msg)
+            await tg_client.edit_message(user.id, message.message_id-1, buttons=game.get_map(), message=msg)
     await tg_client.answer_callback_query(message.callback_query_id)
 
 command = command_class()

@@ -35,7 +35,7 @@ async def processor(user: User, message: Message, tg_client: TgClient, callback_
     shedule = await StudentShedule(user, message).showTimetable(user.group_id, day_count)
     if day_count == -3:
         msg = 'Четная' if shedule else 'Нечетная'
-        await tg_client.send_message(user.id, msg, buttons=keyboard('main_keyboard', user).get_keyboard())
+        await tg_client.send_message(user.id, msg, buttons=keyboard('main_keyboard', user).get_keyboard(), parse_mode=True)
         return
     if shedule:
         try:
@@ -43,12 +43,12 @@ async def processor(user: User, message: Message, tg_client: TgClient, callback_
                 msg = "Список преподавателей:\n{}".format(shedule[:3000])
             else:
                 msg = "Расписание на {}\n {}".format(day_week.lower(), shedule[:3000])
-            await tg_client.send_message(user.id, msg, buttons=keyboard('main_keyboard', user).get_keyboard())
+            await tg_client.send_message(user.id, msg, buttons=keyboard('main_keyboard', user).get_keyboard(), parse_mode=True)
         except:
             print('Ошибка:\n', traceback.format_exc())
     else:
         msg = day_week + ' занятий нет 😎\n' + frazi[random.randint(0, len(frazi) - 1)]
-        await tg_client.send_message(user.id, msg, buttons=keyboard('main_keyboard', user).get_keyboard())
+        await tg_client.send_message(user.id, msg, buttons=keyboard('main_keyboard', user).get_keyboard(), parse_mode=True)
     return
 
 

@@ -1,9 +1,3 @@
-import json
-import traceback
-from datetime import datetime
-
-import aiohttp
-
 from .User import User
 from .Message import Message
 from .Database_connection import cursor, connection, cursorR, conn

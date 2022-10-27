@@ -99,7 +99,8 @@ class StudentShedule:
         result = ''
         for key in sorted(response):
             day = response[key]
-            result += "═──────{}{}────═\n".format(week_elements[key], '─'*(11-len(week_elements[key])) if len(week_elements[key]) < 11 else '')
+            result += "═──────{}{}────═\n".format(week_elements[key], '─' * (11 - len(week_elements[key])) if len(
+                week_elements[key]) < 11 else '')
             for para in day:
                 if '---' in (para["audNum"]).rstrip():  # Экранирование множественных тире
                     para["audNum"] = "--"
@@ -113,7 +114,7 @@ class StudentShedule:
                     'dayTime': para["dayTime"][:5].rstrip(),
                     'disciplType': para["disciplType"][:4].rstrip()
                 }
-                result += "➤ {dayDate} ⌛{dayTime} {disciplType} {disciplName} {audNum} {buildNum}зд. \n".format(
+                result += "➤ *{dayDate} ⌛{dayTime} {disciplType}* _{disciplName}_ {audNum} {buildNum}зд. \n".format(
                     dayDate=para_structure['dayDate'],
                     disciplType=para_structure['disciplType'],
                     disciplName=para_structure['disciplName'],
@@ -127,11 +128,12 @@ class StudentShedule:
         prepodList = []
         resultList = []
         prepodElement = {'disciplType': None, 'disciplName': None,
-                  'prepodName': None}
+                         'prepodName': None}
         for key in response:
             for elem in response[key]:
-                prepodElement = {'disciplType': elem["disciplType"].rstrip(), 'disciplName': elem["disciplName"].rstrip(),
-                          'prepodName': elem["prepodName"].rstrip()}
+                prepodElement = {'disciplType': elem["disciplType"].rstrip(),
+                                 'disciplName': elem["disciplName"].rstrip(),
+                                 'prepodName': elem["prepodName"].rstrip()}
                 if elem["prepodName"].rstrip() == "":
                     prepodElement['prepodName'] = ":не-задан:"
                 prepodList.append(prepodElement)
@@ -154,8 +156,8 @@ class StudentShedule:
                     st += str(discipl).rstrip() + ", "
                 st = st[:-2]
                 prepod['disciplType'] = st
-            res = "👨‍🏫 [" + str(prepod['disciplType']) + "] " + (
-                str(prepod['disciplName'])).rstrip() + " \n" + str(prepod['prepodName']).title()
+            res = "👨‍🏫 |" + str(prepod['disciplType']) + "| *" + (
+                str(prepod['disciplName'])).rstrip() + "* \n`" + str(prepod['prepodName']).title() + "`"
             if res not in resultList:
                 resultList.append(res)
         result = ''
@@ -163,19 +165,18 @@ class StudentShedule:
             result += "\n---------------------------------------------------\n" + row
         return result
 
-
     async def showTimetable(self, groupId: int, tomorrow=0):
         try:
             isNormal, response = await self._get_response()
             if not isNormal:
                 return response
             if tomorrow == -1:
-                return self._get_week_shedule(response) # Расписание по дню недели
+                return self._get_week_shedule(response)  # Расписание по дню недели
             elif tomorrow == -2:
-                return self._get_teacher_list(response) # Список преподов
+                return self._get_teacher_list(response)  # Список преподов
             elif tomorrow == -3:
                 print(self.today.isocalendar()[1] + self.chetn % 2)
-                return True if (int(self.today.isocalendar()[1] + self.chetn) % 2) == 0 else False # Четность недели
+                return True if (int(self.today.isocalendar()[1] + self.chetn) % 2) == 0 else False  # Четность недели
             now = datetime.date.today() + datetime.timedelta(days=tomorrow)
             response = response[str(datetime.date(now.year, now.month, now.day).isoweekday())]
             result = ''
@@ -209,7 +210,6 @@ class StudentShedule:
                 if dayDate == 'чет' and chetn:
                     para_list.append(para_structure)
                 elif dayDate == 'неч' and not chetn:
-                    print("нечетная пара")
                     para_list.append(para_structure)
                 elif dayDate == 'чет\неч' and chetn or dayDate == 'неч\чет' and not chetn:
                     para_structure['dayDate'] = "1️гр. " + para_structure['dayDate']
@@ -224,7 +224,7 @@ class StudentShedule:
                     if dayDate not in ['чет', 'неч', 'чет\неч', 'неч\чет']:
                         para_list.append(para_structure)
             for para in para_list:
-                result += "➤ {dayDate} ⌛{dayTime} {disciplType} {disciplName} {audNum} {buildNum}зд. \n".format(
+                result += "➤ *{dayDate} ⌛{dayTime} {disciplType}* _{disciplName}_ {audNum} {buildNum}зд. \n".format(
                     dayDate=para['dayDate'],
                     disciplType=para['disciplType'],
                     disciplName=para['disciplName'],

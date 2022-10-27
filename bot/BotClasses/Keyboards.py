@@ -47,10 +47,11 @@ game_controls = [
 game_over = [['с']]
 
 group_change = [[['Изменить', 'group_change_commit']]]
+answer_feedback = [[['Ответить пользователю', 'answer_feedback']]]
 
 
 class keyboard:
-    def __init__(self, type_name: str, user: User, buttons: list = None):
+    def __init__(self, type_name: str, user: User, buttons: list = None, payload=None):
         self.type_name = type_name
         self.buttons = []
         self.user = user
@@ -74,6 +75,11 @@ class keyboard:
             self.buttons = game_over
         elif self.type_name == 'group_change':
             self.buttons = group_change
+        elif self.type_name == 'answer_for_feedback':
+            button = answer_feedback[0][0][1]
+            answer_feedback[0][0][1] = json.dumps({'button': button, 'user_id':payload})
+            print(answer_feedback)
+            self.buttons = answer_feedback
 
     def get_profile(self):
         self.profile = profile

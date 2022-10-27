@@ -3,6 +3,7 @@ import json
 
 class Message:
     def __init__(self, update):
+        self.button = None
         if 'message' in update.keys():
             self.message = update['message']
             self.language_code = self.message['from']['language_code']
@@ -33,6 +34,23 @@ class Message:
         else:
             self.username = ''
         self.chat = self.message['chat']
-        self.text = self.message['text']
+        if 'text' in self.message.keys():
+            self.text = self.message['text']
+        else:
+            self.text = ""
         if 'entities' in self.message.keys():
             self.entities = self.message['entities']
+        if 'caption' in self.message.keys():
+            self.text = self.message['caption']
+        self.attachments = None
+        self.media_group_id = None
+        if 'media_group_id' in self.message.keys():
+            self.media_group_id = self.message['media_group_id']
+        if 'photo' in self.message.keys():
+            files = []
+            for file in self.message['photo']:
+                files.append({
+                    'type': 'photo',
+                    'media': file['file_id']
+                })
+            self.attachments = files

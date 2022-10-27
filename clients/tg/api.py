@@ -33,7 +33,7 @@ class TgClient:
         res_dict = await self.get_updates(offset=offset, timeout=timeout)
         return res_dict
 
-    async def send_message(self, chat_id: int, text: str, buttons=None):
+    async def send_message(self, chat_id: int, text: str, buttons=None, parse_mode=None):
         try:
             url = self.get_url("sendMessage")
             payload = {
@@ -42,6 +42,8 @@ class TgClient:
             }
             if buttons or type(buttons) == type([]):
                 payload['reply_markup'] = buttons
+            if parse_mode:
+                payload['parse_mode'] = 'Markdown'
             async with aiohttp.ClientSession() as session:
                 async with session.post(url, json=payload) as resp:
                     res_dict = await resp.json()
@@ -54,7 +56,7 @@ class TgClient:
             url = self.get_url("editMessageText")
             payload = {
                 'chat_id': chat_id,
-                'message_id': message_id-1,
+                'message_id': message_id,
                 'text': message
             }
             if buttons or type(buttons) == type([]):
@@ -89,3 +91,32 @@ class TgClient:
             async with session.post(url, json=payload) as resp:
                 res_dict = await resp.json()
                 return res_dict
+
+    async def forward_message(self, chat_id: int, from_chat_id: str, message_id: str):
+        try:
+            url = self.get_url("forwardMessage")
+            payload = {
+                'chat_id': chat_id,
+                'message_id': message_id-1,
+                'from_chat_id': from_chat_id
+            }
+            async with aiohttp.ClientSession() as session:
+                async with session.post(url, json=payload) as resp:
+                    res_dict = await resp.json()
+                    return res_dict
+        except:
+            print('Ошибка:\n', traceback.format_exc())
+
+    async def send_media_group(self, chat_id: int, media: list):
+        try:
+            url = self.get_url("sendMediaGroup")
+            payload = {
+                'chat_id': chat_id,
+                'media': media
+            }
+            async with aiohttp.ClientSession() as session:
+                async with session.post(url, json=payload) as resp:
+                    res_dict = await resp.json()
+                    return res_dict
+        except:
+            print('Ошибка:\n', traceback.format_exc())

@@ -44,6 +44,7 @@ def damerau_levenshtein_distance(s1, s2):
 
 
 async def message_handler(update, tg_client, debug=False):
+    print(update)
     message = Message(update)
     if not message:
         return
@@ -53,11 +54,11 @@ async def message_handler(update, tg_client, debug=False):
     if not result:
         await tg_client.send_message(user.id, answer, buttons=keyboard_answer)
         return
-    if message.text[0] == '/':  # Remove slash
+    if message.text and message.text[0] == '/':  # Remove slash
         message.text = message.text[1:]
     stage = Stage(user, message)
 
-    if message.text.lower() == 'выход':
+    if message.text and message.text.lower() == 'выход':
         await tg_client.send_message(user.id, 'Главное меню',
                                      buttons=keyboard('main_keyboard', user).get_keyboard())
         stage._set_status(0)
@@ -66,18 +67,19 @@ async def message_handler(update, tg_client, debug=False):
     distance = len(message.text)
     command = None
     key = ''
-
+    if not len(message.text) and not message.callback_query_id and not stage.status:
+        return
     for c in command_list:
         if message.callback_query_id:
             if message.button in c.payload and user.role in c.role:
-                await c.process(user, message, tg_client, True, stage=stage)
+                await c.process(user, message, tg_client, stage=stage)
                 await tg_client.answer_callback_query(message.callback_query_id)
                 return
         if stage.status:
             if stage.status in c.status_list:
                 await c.process(user, message, tg_client, stage=stage)
                 return
-        if user.role in c.role and not message.callback_query_id:
+        if user.role in c.role and not message.callback_query_id and not stage.status:
             for k in c.keys:
                 d = damerau_levenshtein_distance(message.text.lower(), k)
                 if d < distance:
