@@ -1,7 +1,7 @@
 import os
 import importlib
 
-from bot.BotClasses import command_list, Message, User, Registration, traceback
+from bot.BotClasses import command_list, Message, User, Registration, traceback, statistic_updates, statistic_users_active_list, statistic_users_active
 from bot.BotClasses.Keyboards import keyboard
 from bot.BotClasses.Stage_handler import Stage
 
@@ -49,6 +49,14 @@ async def message_handler(update, tg_client, debug=False):
     if not message:
         return
     user = User(message)
+
+    global statistic_updates, statistic_users_active_list, statistic_users_active
+    statistic_updates += 1
+    if not user.id in statistic_users_active_list:
+        statistic_users_active += 1
+        statistic_users_active_list.append(user.id)
+    message.cmd_payload = [statistic_users_active, statistic_updates]
+
     registration = Registration(user, message, tg_client, debug)
     result, answer, keyboard_answer = await registration.processing()
     if not result:

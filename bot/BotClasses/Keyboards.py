@@ -1,14 +1,21 @@
 import json
 from .User import User
 
+##### Classic version (old)
+# main_keyboard = [
+#     ["На завтра"],
+#     ["На сегодня", "На послезавтра", "Полностью"],
+#     ["Четность недели", "Задания и объявления"],
+#     ["Разное", "Преподаватели"],
+#     ["Обратная связь", "Донат", "Профиль"]
+# ]
 main_keyboard = [
     ["На завтра"],
-    ["На сегодня", "На послезавтра", "Полностью"],
-    ["Четность недели", "Задания и объявления"],
+    ["На сегодня", "На послезавтра"],
+    ["Четность недели", "Полностью"],
     ["Разное", "Преподаватели"],
     ["Обратная связь", "Донат", "Профиль"]
 ]
-
 registration_role = [
     ['Студент'],
     ['Преподаватель'],
@@ -23,11 +30,12 @@ feedback = [
 
 profile = [
     [['{} группа', 'groupchange']],
-    [['Мои задания', 'my_task']],
+    # [['Мои задания', 'my_task']],
     [['Поддержать проект', 'donate']],
-    [['Моя группа', 'my_groups_list'], ['Ссылки на одногруппников', 'group_members']],
-    [['Мой институт', 'my_faculty'], ['Подписки', 'subscriptions']],
-    [['{}', 'starosta']]
+    [['Ссылки на одногруппников', 'group_members']],
+    [['Студенты группы', 'my_groups_list']],
+    [['Мой институт', 'my_faculty']]  # , ['Подписки', 'subscriptions']],
+    # [['{}', 'starosta']]
 ]
 
 feedback_create = [[['Продолжить', 'feedback_create']]]
@@ -77,15 +85,15 @@ class keyboard:
             self.buttons = group_change
         elif self.type_name == 'answer_for_feedback':
             button = answer_feedback[0][0][1]
-            answer_feedback[0][0][1] = json.dumps({'button': button, 'user_id':payload})
+            answer_feedback[0][0][1] = json.dumps({'button': button, 'user_id': payload})
             print(answer_feedback)
             self.buttons = answer_feedback
 
     def get_profile(self):
         self.profile = profile
         self.profile[0][0][0] = self.profile[0][0][0].format(self.user.group_name)
-        self.profile[5][0][0] = self.profile[5][0][0].format(
-            'Меню старосты' if self.user.role > 1 else 'Стать старостой')
+        # self.profile[5][0][0] = self.profile[5][0][0].format(
+        #     'Меню старосты' if self.user.role > 1 else 'Стать старостой')
         return self.profile
 
     def get_inline_keyboard(self) -> dict:

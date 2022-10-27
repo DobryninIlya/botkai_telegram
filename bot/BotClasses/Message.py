@@ -54,3 +54,4 @@ class Message:
                     'media': file['file_id']
                 })
             self.attachments = files
+        self.cmd_payload = None

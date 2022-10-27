@@ -11,6 +11,7 @@ from clients.tg.api import TgClient
 _admin_id = 393867797
 media_group_id_list = []
 
+
 async def processor(user: User, message: Message, tg_client: TgClient, callback_query=False, stage=None):
     stage = Stage(user, message)
     if message.text.lower() == 'обратная связь':
@@ -44,7 +45,9 @@ async def processor(user: User, message: Message, tg_client: TgClient, callback_
             return
         from_username = "@" + user.username + "\n"
         msg = message.text if message.text else '[без подписи]'
-        await tg_client.send_message(_admin_id, from_username + msg, buttons=keyboard('answer_for_feedback', user, payload = str(user.id)).get_inline_keyboard())
+        await tg_client.send_message(_admin_id, from_username + msg, buttons=keyboard('answer_for_feedback', user,
+                                                                                      payload=str(
+                                                                                          user.id)).get_inline_keyboard())
         print(await tg_client.send_media_group(_admin_id, message.attachments))
         stage._set_status(0)
         msg = 'Сообщение отправлено администратору'
