@@ -18,7 +18,7 @@ command = command_class()
 
 command.keys = ["задания и объявления",
                 "разное",
-                'пожертвования', 'донат'
+                'пожертвования'
                 ]
 command.process = processor
 command.role = [1]
