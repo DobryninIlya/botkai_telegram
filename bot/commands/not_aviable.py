@@ -22,3 +22,4 @@ command.keys = ["задания и объявления",
                 ]
 command.process = processor
 command.role = [1]
+command.payload = ['group_members', 'my_groups_list', 'my_faculty']

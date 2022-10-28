@@ -56,6 +56,7 @@ game_over = [['с']]
 
 group_change = [[['Изменить', 'group_change_commit']]]
 answer_feedback = [[['Ответить пользователю', 'answer_feedback']]]
+donate_link = [[['Отправить перевод', 'https://www.tinkoff.ru/cf/7EDMYnSmO68']]]
 
 
 class keyboard:
@@ -88,6 +89,8 @@ class keyboard:
             answer_feedback[0][0][1] = json.dumps({'button': button, 'user_id': payload})
             print(answer_feedback)
             self.buttons = answer_feedback
+        elif self.type_name == 'donate_link':
+            self.buttons = donate_link
 
     def get_profile(self):
         self.profile = profile
@@ -132,6 +135,22 @@ class keyboard:
             'keyboard': self.buttons
 
         }
+        keyboard = json.dumps(keyboard, ensure_ascii=False).encode('utf-8')
+        keyboard = str(keyboard.decode('utf-8'))
+        return keyboard
+
+    def get_link(self) -> list:
+        button_list = []
+        for button_row in self.buttons:
+            button_row_list = []
+            for button in button_row:
+                button_ = {
+                    'text': button[0],
+                    'url': button[1]
+                }
+                button_row_list.append(button_)
+            button_list.append(button_row_list)
+        keyboard = {"inline_keyboard": button_list}
         keyboard = json.dumps(keyboard, ensure_ascii=False).encode('utf-8')
         keyboard = str(keyboard.decode('utf-8'))
         return keyboard
