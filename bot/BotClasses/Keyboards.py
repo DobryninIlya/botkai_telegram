@@ -32,8 +32,8 @@ profile = [
     [['{} группа', 'groupchange']],
     # [['Мои задания', 'my_task']],
     [['Поддержать проект', 'donate']],
-    [['Ссылки на одногруппников', 'group_members']],
-    [['Студенты группы', 'my_groups_list']],
+    [['Ссылки на одногруппников', 'classmates_links']],
+    [['Студенты группы', 'classmates_list']],
     [['Мой институт', 'my_faculty']]  # , ['Подписки', 'subscriptions']],
     # [['{}', 'starosta']]
 ]

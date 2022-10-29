@@ -48,10 +48,18 @@ class Message:
             self.media_group_id = self.message['media_group_id']
         if 'photo' in self.message.keys():
             files = []
-            for file in self.message['photo']:
-                files.append({
-                    'type': 'photo',
-                    'media': file['file_id']
-                })
+            print('photo massive:', self.message['photo'])
+            # for file in self.message['photo']:
+            #     print('F: ', file['file_id'])
+            #     files.append({
+            #         'type': 'photo',
+            #         'media': file['file_id']
+            #     })
+            #     if not file['file_id'] in file_ids and False:
+            #         print(file['file_id'] in file_ids)
+            files.append({
+                'type': 'photo',
+                'media': self.message['photo'][-1]['file_id']
+            })
             self.attachments = files
         self.cmd_payload = None

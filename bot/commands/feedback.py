@@ -22,7 +22,7 @@ async def processor(user: User, message: Message, tg_client: TgClient, callback_
         await tg_client.send_message(user.id, msg, buttons=keyboard('feedback_create', user).get_inline_keyboard())
         return
     elif message.button == 'feedback_create':
-        msg = 'Введите текст вопроса. \n'
+        msg = 'Введите текст вопроса. \nПрикрепляйте только фотографии с галочкой "Сжать фотографии"'
         stage._set_status(110)
         await tg_client.send_message(user.id, msg, buttons=keyboard('exit', user).get_keyboard())
     elif message.button == 'answer_feedback':
@@ -48,22 +48,25 @@ async def processor(user: User, message: Message, tg_client: TgClient, callback_
         await tg_client.send_message(_admin_id, from_username + msg, buttons=keyboard('answer_for_feedback', user,
                                                                                       payload=str(
                                                                                           user.id)).get_inline_keyboard())
-        print(await tg_client.send_media_group(_admin_id, message.attachments))
+        await tg_client.send_media_group(_admin_id, message.attachments)
         stage._set_status(0)
         msg = 'Сообщение отправлено администратору'
         await tg_client.send_message(user.id, msg, buttons=keyboard('main_keyboard', user).get_keyboard())
-
+        return
     elif stage.status == 111:
+        if message.media_group_id and message.media_group_id in media_group_id_list:
+            return
         feedback_msg = message.text
         from_username = "Ответ от администратора: \n"
         msg = message.text if message.text else '[без подписи]'
         value = Value(user, message)
         user_id = value.get_user_to_answer()
         await tg_client.send_message(user_id, from_username + msg)
+        await tg_client.send_media_group(user_id, message.attachments)
         stage._set_status(0)
         msg = 'Сообщение отправлено пользователю'
         await tg_client.send_message(user.id, msg, buttons=keyboard('main_keyboard', user).get_keyboard())
-
+        await tg_client.send_media_group(_admin_id, message.attachments)
     return
 
 
