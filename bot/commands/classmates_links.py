@@ -21,8 +21,8 @@ async def processor(user: User, message: Message, tg_client: TgClient, callback_
     result = ""
     i = 1
     for row in query_result:
-        result += "{}. [{} {}](tg://user?id={})".format(i, row[1].rstrip(), row[2].rstrip(), row[0])
-
+        result += "{}. [{} {}](tg://user?id={}) \n".format(i, row[1].rstrip(), row[2].rstrip(), row[0])
+        i+=1
     await tg_client.send_message(user.id, result, parse_mode="Markdown")
     return
 

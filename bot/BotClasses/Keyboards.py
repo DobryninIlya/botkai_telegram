@@ -87,17 +87,13 @@ class keyboard:
         elif self.type_name == 'answer_for_feedback':
             button = answer_feedback[0][0][1]
             answer_feedback[0][0][1] = json.dumps({'button': button, 'user_id': payload})
-            print(answer_feedback)
             self.buttons = answer_feedback
         elif self.type_name == 'donate_link':
             self.buttons = donate_link
 
     def get_profile(self):
         self.profile = profile
-        self.profile[0][0][0] = self.profile[0][0][0].format(self.user.group_name)
-        print('group: ', self.profile[0][0][0].format(self.user.group_name))
-        # self.profile[5][0][0] = self.profile[5][0][0].format(
-        #     'Меню старосты' if self.user.role > 1 else 'Стать старостой')
+        # self.profile[0][0][0] = self.profile[0][0][0].format(self.user.group_name)
         return self.profile
 
     def get_inline_keyboard(self) -> dict:
