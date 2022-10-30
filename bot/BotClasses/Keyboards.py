@@ -29,7 +29,7 @@ feedback = [
 ]
 
 profile = [
-    [['{} группа', 'groupchange']],
+    [['Моя группа', 'groupchange']],
     # [['Мои задания', 'my_task']],
     [['Поддержать проект', 'donate']],
     [['Ссылки на одногруппников', 'classmates_links']],
