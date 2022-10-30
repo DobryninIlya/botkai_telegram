@@ -95,6 +95,7 @@ class keyboard:
     def get_profile(self):
         self.profile = profile
         self.profile[0][0][0] = self.profile[0][0][0].format(self.user.group_name)
+        print('group: ', self.profile[0][0][0].format(self.user.group_name))
         # self.profile[5][0][0] = self.profile[5][0][0].format(
         #     'Меню старосты' if self.user.role > 1 else 'Стать старостой')
         return self.profile

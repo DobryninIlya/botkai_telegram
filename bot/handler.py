@@ -44,12 +44,13 @@ def damerau_levenshtein_distance(s1, s2):
 
 
 async def message_handler(update, tg_client, debug=False):
-    print(update)
+    if 'my_chat_member' in update.keys():
+        return
+
     message = Message(update)
     if not message:
         return
     user = User(message)
-
     global statistic_updates, statistic_users_active_list, statistic_users_active
     statistic_updates += 1
     if not user.id in statistic_users_active_list:
