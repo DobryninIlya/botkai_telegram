@@ -128,8 +128,8 @@ class Registration:
     def _save_user(self, role_id):
         sql = "INSERT INTO tg_users VALUES ({id}, '{name}', '{lastname}', '{username}', {role}, {admLevel}, {is_verificated}, {groupname}, {groupid})".format(
             id=self.id,
-            name=self.user.name,
-            lastname=self.user.lastname,
+            name=self.user.name.replace("'", "''"),
+            lastname=self.user.lastname.replace("'", "''"),
             username=self.user.username,
             role=role_id,
             admLevel=0,

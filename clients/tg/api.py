@@ -120,3 +120,17 @@ class TgClient:
                     return res_dict
         except:
             print('Ошибка:\n', traceback.format_exc())
+
+    async def send_document(self, chat_id: int, document: str, caption: str = 'Документ'):
+        try:
+            url = self.get_url("sendDocument")
+            data = aiohttp.FormData()
+            data.add_field('document', document, content_type='multipart/form-data')
+            data.add_field('chat_id', str(chat_id), content_type='text/plain')
+            data.add_field('caption', caption, content_type='text/plain')
+            async with aiohttp.ClientSession() as session:
+                async with session.post(url, data=data) as resp:
+                    res_dict = await resp.json()
+                    return res_dict
+        except:
+            print('Ошибка:\n', traceback.format_exc())
