@@ -58,6 +58,12 @@ group_change = [[['Изменить', 'group_change_commit']]]
 answer_feedback = [[['Ответить пользователю', 'answer_feedback']]]
 donate_link = [[['Отправить перевод', 'https://www.tinkoff.ru/cf/7EDMYnSmO68']]]
 
+other_functions = [
+    [['Экспорт в календарь', 'export_ics']],
+    [['Word документ', 'export_word']],
+    [['График посещения занятий (для старосты)', 'export_entries_control']],
+    [['Баллы БРС', 'score_raiting']]
+]
 
 class keyboard:
     def __init__(self, type_name: str, user: User, buttons: list = None, payload=None):
@@ -90,6 +96,8 @@ class keyboard:
             self.buttons = answer_feedback
         elif self.type_name == 'donate_link':
             self.buttons = donate_link
+        elif self.type_name == 'other_functions':
+            self.buttons = other_functions
 
     def get_profile(self):
         self.profile = profile

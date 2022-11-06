@@ -16,9 +16,7 @@ async def processor(user: User, message: Message, tg_client: TgClient, callback_
 
 command = command_class()
 
-command.keys = ["задания и объявления",
-                "разное",
-                'пожертвования']
+command.keys = ["задания и объявления", 'пожертвования', 'график посещения занятий (для старосты)', 'баллы брс']
 command.process = processor
 command.role = [1]
 command.payload = ['group_members', 'my_groups_list', 'my_faculty']

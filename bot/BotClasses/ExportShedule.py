@@ -1,4 +1,7 @@
 import datetime
+import os
+
+import docx
 
 from .StudentShedule import StudentShedule
 from ics import Calendar, Event
@@ -21,6 +24,24 @@ tt_dict = {
     "18:25:00": "15:25:00",
     "20:00:00": "17:00:00",
 }
+
+try:
+    if os.getenv("OS") == 'Windows_NT':  # test key
+        path = "templates/"
+except:
+    path = '/home/u_botkai/botraspisanie/botkai_telegram/templates/'
+
+
+
+class ShedRow(object):
+    def __init__(self, dayTime, dayDate, disciplName, disciplType, audNum, buildNum, prepodName):
+        self.dayTime = dayTime
+        self.dayDate = dayDate
+        self.disciplName = disciplName
+        self.disciplType = disciplType
+        self.audNum = audNum
+        self.buildNum = buildNum
+        self.prepodName = prepodName
 
 
 class ExportShedule(StudentShedule):
@@ -83,3 +104,77 @@ class ExportShedule(StudentShedule):
         return str(c).encode('UTF-8')
         # with open('{}.ics'.format(self.group_id), 'w', encoding="utf-8") as f:
         #     f.write(str(c))
+
+    async def TimetableWrite(self):
+        isNormal, response = await super()._get_response()
+        if not isNormal:
+            return response
+
+        rows = 0
+        lis = []
+
+        elem = response[str(1)]
+        try:
+            lis.append("Понедельник")
+            for day in elem:
+                lis.append(
+                    ShedRow(day["dayTime"], day["dayDate"], day["disciplName"], day["disciplType"], day["audNum"],
+                            day["buildNum"], day["prepodName"]))
+            elem = response[str(2)]
+            lis.append("Вторник")
+            for day in elem:
+                lis.append(
+                    ShedRow(day["dayTime"], day["dayDate"], day["disciplName"], day["disciplType"], day["audNum"],
+                            day["buildNum"], day["prepodName"]))
+            rows = len(lis)
+            elem = response[str(3)]
+            lis.append("Среда")
+            for day in elem:
+                lis.append(
+                    ShedRow(day["dayTime"], day["dayDate"], day["disciplName"], day["disciplType"], day["audNum"],
+                            day["buildNum"], day["prepodName"]))
+            rows = len(lis)
+            elem = response[str(4)]
+            lis.append("Четверг")
+            for day in elem:
+                lis.append(
+                    ShedRow(day["dayTime"], day["dayDate"], day["disciplName"], day["disciplType"], day["audNum"],
+                            day["buildNum"], day["prepodName"]))
+            rows = len(lis)
+            elem = response[str(5)]
+            lis.append("Пятница")
+            for day in elem:
+                lis.append(
+                    ShedRow(day["dayTime"], day["dayDate"], day["disciplName"], day["disciplType"], day["audNum"],
+                            day["buildNum"], day["prepodName"]))
+            rows = len(lis)
+            elem = response[str(6)]
+            lis.append("Суббота")
+            for day in elem:
+                lis.append(
+                    ShedRow(day["dayTime"], day["dayDate"], day["disciplName"], day["disciplType"], day["audNum"],
+                            day["buildNum"], day["prepodName"]))
+        except:
+            pass
+        return lis
+
+    async def createDocShedule(self):
+
+        wordDocument = docx.Document(path + "blank.docx")
+
+        lis = await self.TimetableWrite()
+        for day in lis:
+            if day in ["Понедельник", "Вторник", "Среда", "Четверг", "Пятница", "Суббота"]:
+                par = wordDocument.add_heading(day, 3)
+                par.bold = True
+
+
+            else:
+                par = wordDocument.add_paragraph(
+                    (str(day.dayTime)).rstrip() + " " + ((str(day.dayDate)).rstrip()).ljust(8) + " " + str(
+                        day.disciplName) + " " + (str(day.disciplType)).upper() + " " + (
+                        str(day.audNum)).rstrip() + " ауд  " + (str(day.buildNum)).rstrip() + "зд.  " + (
+                        str(day.prepodName)).rstrip())
+                # par.style = "No Spacing"
+        wordDocument.save(path + str(self.group_id) + ".docx")
+        return path + str(self.group_id) + ".docx"
