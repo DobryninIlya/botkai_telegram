@@ -25,9 +25,12 @@ tt_dict = {
     "20:00:00": "17:00:00",
 }
 
+path = ''
 try:
     if os.getenv("OS") == 'Windows_NT':  # test key
         path = "templates/"
+    else:
+        path = '/home/u_botkai/botraspisanie/botkai_telegram/templates/'
 except:
     path = '/home/u_botkai/botraspisanie/botkai_telegram/templates/'
 
