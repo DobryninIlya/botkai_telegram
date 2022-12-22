@@ -35,7 +35,7 @@ class Worker:
 
     async def start(self):
         self._tasks = [asyncio.create_task(self._worker()) for _ in range(self.concurrent_workers)]
-        await self.tg_client.send_message(393867797, 'стартуем....')
+        # await self.tg_client.send_message(393867797, 'стартуем....')
 
     async def stop(self):
         await self.queue.join()
