@@ -38,6 +38,6 @@ class Stage:
         try:
             self.cursorR.execute("INSERT INTO Status VALUES ({},{})".format(self.user_id, code))
         except:
-            self.cursorR.execute("UPDATE Status SET Status = {}".format(code))
+            self.cursorR.execute("UPDATE Status SET Status = {} WHERE ID={}".format(code, self.user_id))
         finally:
             self.conn.commit()
