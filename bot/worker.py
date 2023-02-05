@@ -27,7 +27,7 @@ class Worker:
             try:
                 await self.handle_update(upd)
             except:
-                print('Ошибка:\n', traceback.format_exc())
+                print('Ошибка:\n', traceback.format_exc(), flush=True)
                 await self.tg_client.send_message(393867797, str(traceback.format_exc()))
                 await self.tg_client.send_message(393867797, upd)
             finally:

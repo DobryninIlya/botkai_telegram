@@ -16,15 +16,15 @@ def run():
         token = os.getenv("TG_TOKEN")
     bot = Bot(token, 5)
     try:
-        print('bot has been started')
+        print('bot has been started', flush=True)
         loop.create_task(bot.start())
         loop.run_forever()
     except KeyboardInterrupt:
-        print("\nstopping", datetime.datetime.now())
+        print("\nstopping", datetime.datetime.now(), flush=True)
         loop.run_until_complete(bot.stop())
-        print('bot has been stopped', datetime.datetime.now())
+        print('bot has been stopped', datetime.datetime.now(), flush=True)
     except:
-        print('Ошибка (глобальная):\n', traceback.format_exc())
+        print('Ошибка (глобальная):\n', traceback.format_exc(), flush=True)
 
 
 if __name__ == '__main__':
