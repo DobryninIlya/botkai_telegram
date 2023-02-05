@@ -103,7 +103,7 @@ class StudentShedule:
                 if '---' in (para["buildNum"]).rstrip():
                     para["buildNum"] = "--"
                 para_structure = {
-                    'dayDate': para["dayDate"][:3].rstrip(),
+                    'dayDate': para["dayDate"][:100].rstrip(),
                     'disciplName': (para["disciplName"]).rstrip(),
                     'audNum': para["audNum"].rstrip(),
                     'buildNum': para["buildNum"].rstrip(),
@@ -190,7 +190,7 @@ class StudentShedule:
                     elem["buildNum"] = "-нет-"
 
                 para_structure = {
-                    'dayDate': elem["dayDate"][:3].rstrip(),
+                    'dayDate': elem["dayDate"][:100].rstrip(),
                     'disciplName': elem["disciplName"].rstrip(),
                     'audNum': elem["audNum"].rstrip(),
                     'buildNum': elem["buildNum"].rstrip(),
