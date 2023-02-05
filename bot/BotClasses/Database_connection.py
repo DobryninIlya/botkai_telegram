@@ -25,3 +25,5 @@ cursor = connect.cursor
 connection = connect.connection
 cursorR = connect.cursorR
 conn = connect.conn
+
+login_states = []

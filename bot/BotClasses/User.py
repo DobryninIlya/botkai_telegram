@@ -11,6 +11,7 @@ class User:
         except:
             pass
         self.role = None
+        self.login = ''
         self.admLevel = 0
         self.is_verificated = False
 
@@ -28,4 +29,5 @@ class User:
         self.group_name = self.result[7]
         self.group_id = self.result[8]
         self.role = self.result[4]
+        self.login = self.result[9]
 

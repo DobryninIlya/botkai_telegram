@@ -76,10 +76,6 @@ class StudentShedule:
                                                               "p_p_lifecycle": "2", "p_p_resource_id": "schedule"},
                                                           timeout=3) as response:
                                 response = await response.json(content_type='text/html')
-                        sql = "UPDATE saved_timetable SET shedule = '{}', date_update = '{}' WHERE groupp = {}".format(
-                            json.dumps(response), datetime.date.today(), self.group_id)
-                        cursor.execute(sql)
-                        connection.commit()
                         return True, response
                     except:
                         return True, ""

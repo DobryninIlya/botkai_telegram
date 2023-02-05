@@ -16,6 +16,15 @@ main_keyboard = [
     ["Разное", "Преподаватели"],
     ["Обратная связь", "Донат", "Профиль"]
 ]
+
+main_keyboard_teacher = [
+    ["На завтра"],
+    ["На сегодня", "На послезавтра"],
+    ["Четность недели", "Полностью"],
+    ["Обратная связь"]
+
+]
+
 registration_role = [
     ['Студент'],
     ['Преподаватель'],
@@ -65,13 +74,18 @@ other_functions = [
     [['Баллы БРС', 'score_raiting']]
 ]
 
+
 class keyboard:
     def __init__(self, type_name: str, user: User, buttons: list = None, payload=None):
         self.type_name = type_name
         self.buttons = []
         self.user = user
         if self.type_name == 'main_keyboard':
-            self.buttons = main_keyboard
+            if self.user.role == 2:  # препод
+                self.buttons = main_keyboard_teacher
+            else:  # студент
+                self.buttons = main_keyboard
+
         elif self.type_name == 'exit':
             self.buttons = exit
         elif self.type_name == 'registration_role':
