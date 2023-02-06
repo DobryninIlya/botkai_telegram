@@ -8,11 +8,13 @@ import json
 from pprint import pprint
 from .User import User
 from .Message import Message
+from clients.tg.api import TgClient
 from .Database_connection import cursor, connection, cursorR, conn
 
 
 class TeacherShedule:
-    def __init__(self, user: User, message: Message):
+    def __init__(self, user: User, message: Message, tg_client: TgClient):
+        self.tg_client = tg_client
         self.user = user
         self.message = message
         self.group_id = user.group_id
@@ -20,18 +22,99 @@ class TeacherShedule:
         self.today = datetime.date.today()
         self.chetn = int(os.getenv("CHETN"))
 
+    async def alert_for_differences(self, login: str, diff: str):
+        sql = "SELECT id FROM tg_users WHERE login='{}'".format(login)
+        cursor.execute(sql)
+        result = cursor.fetchall()
+        diff += "\n*Изменения уже сохранены.*"
+        for elem in result:
+            try:
+                res = await self.tg_client.send_message(elem[0], diff, parse_mode=True)
+                print(res)
+            except:
+                print('Ошибка:\n', traceback.format_exc(), flush=True)
+
+    async def timetable_differences(self, old: list, new: list):
+        week_elements = {
+            1: 'Понедельник',
+            2: 'Вторник',
+            3: 'Среда',
+            4: 'Четверг',
+            5: 'Пятница',
+            6: 'Суббота',
+            7: 'Воскресенье'
+        }
+        if old != new:
+            result = "*Обратите внимание!* \nИзменения в вашем расписании:\n"
+            for day in sorted(new.keys()):
+                if new[day] != old[day]:
+                    for lesson in new[day]:
+                        if lesson not in old[day]:
+                            result += "*(+)*:: `{dayNum}| [{dayTime}] {dayDate} #{group} {disciplName}`\n".format(
+                                dayNum=week_elements[lesson['dayNum']],
+                                dayTime=lesson['dayTime'].rstrip(),
+                                dayDate=lesson['dayDate'].rstrip(),
+                                group=lesson['group'].rstrip(),
+                                disciplName=lesson['disciplName'].rstrip()
+                            )
+            await self.alert_for_differences(self.user.login.rstrip(), result)
+            return
+
     async def _get_response(self):
-        try:
-            async with aiohttp.ClientSession() as session:
-                async with await session.post(self.BASE_URL_STAFF, data="prepodLogin=" + self.user.login,
-                                              headers={'Content-Type': "application/x-www-form-urlencoded",
-                                                       "user-agent": "BOT RASPISANIE v.1"},
-                                              params={"p_p_id": "pubLecturerSchedule_WAR_publicLecturerSchedule10",
-                                                      "p_p_lifecycle": "2", "p_p_resource_id": "schedule"}) as response:
-                    response = await response.json(content_type='text/html')
+        sql = "SELECT * FROM saved_timetable_teacher WHERE login='{}'".format(self.user.login.rstrip())
+        cursor.execute(sql)
+        result = cursor.fetchone()
+        if result == None:
+            try:
+                async with aiohttp.ClientSession() as session:
+                    async with await session.post(self.BASE_URL_STAFF, data="prepodLogin=" + self.user.login.rstrip(),
+                                                  headers={'Content-Type': "application/x-www-form-urlencoded",
+                                                           "user-agent": "BOT RASPISANIE v.1"},
+                                                  params={
+                                                      "p_p_id": "pubLecturerSchedule_WAR_publicLecturerSchedule10",
+                                                      "p_p_lifecycle": "2",
+                                                      "p_p_resource_id": "schedule"}) as response:
+                        response = await response.json(content_type='text/html')
+                sql = "INSERT INTO public.saved_timetable_teacher VALUES ('{}', '{}', '{}')".format(
+                    self.user.login.rstrip(),
+                    datetime.date.today(),
+                    json.dumps(response))
+                cursor.execute(sql)
+                connection.commit()
+                return True, response
+            except:
+                print('Ошибка:\n', traceback.format_exc(), flush=True)
+                return False, "_Ошибка подключения к серверу..._"
+
+        else:
+            date_update = result[1]
+            timetable = result[2]
+            if date_update + datetime.timedelta(days=1) < self.today:  # Если старое, то обновить
+                try:
+                    async with aiohttp.ClientSession() as session:
+                        async with await session.post(self.BASE_URL_STAFF,
+                                                      data="prepodLogin=" + self.user.login.rstrip(),
+                                                      headers={'Content-Type': "application/x-www-form-urlencoded",
+                                                               "user-agent": "BOT RASPISANIE v.1"},
+                                                      params={
+                                                          "p_p_id": "pubLecturerSchedule_WAR_publicLecturerSchedule10",
+                                                          "p_p_lifecycle": "2",
+                                                          "p_p_resource_id": "schedule"}) as response:
+                            response = await response.json(content_type='text/html')
+                    assert response, "Расписание имеет некорректную форму"
+                    await self.timetable_differences(json.loads(timetable), response)
+                    sql = "UPDATE saved_timetable_teacher SET query = '{}', date_update = '{}' WHERE login = '{}'".format(
+                        json.dumps(response), datetime.date.today(), self.user.login.rstrip())
+                    cursor.execute(sql)
+                    connection.commit()
                     return True, response
-        except:
-            return False, "_Ошибка подключения к серверу..._"
+                except:
+                    print('Ошибка (расписание):\n', traceback.format_exc(), flush=True)
+                    return True, json.loads(timetable)
+            else:
+                return True, json.loads(timetable)
+
+        return
 
     def _get_week_shedule(self, response):
         week_elements = {
@@ -72,7 +155,6 @@ class TeacherShedule:
                     dayTime=para_structure['dayTime']
                 )
         return result
-
 
     async def showTimetable(self, groupId: int, tomorrow=0):
         try:
@@ -151,5 +233,5 @@ class TeacherShedule:
         except KeyError:
             return False
         except:
-            print('Ошибка:\n', traceback.format_exc())
+            print('Ошибка:\n', traceback.format_exc(), flush=True)
             return ""

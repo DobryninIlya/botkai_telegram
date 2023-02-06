@@ -32,7 +32,7 @@ async def processor(user: User, message: Message, tg_client: TgClient, callback_
         day_count = -2
     elif text in ['четность', 'какая неделя', 'какая сейчас неделя', 'четность недели']:
         day_count = -3
-    shedule = await TeacherShedule(user, message).showTimetable(user.group_id, day_count)
+    shedule = await TeacherShedule(user, message, tg_client).showTimetable(user.group_id, day_count)
     if day_count == -3:
         msg = 'Четная' if shedule else 'Нечетная'
         await tg_client.send_message(user.id, msg, buttons=keyboard('main_keyboard', user).get_keyboard(), parse_mode=True)
