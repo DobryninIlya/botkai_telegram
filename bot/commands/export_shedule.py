@@ -9,6 +9,8 @@ from clients.tg.api import TgClient
 async def processor(user: User, message: Message, tg_client: TgClient, callback_query=False, stage=None):
     export = ExportShedule(user, message)
     ics_export = await export.makeFile(2)
+    if not ics_export:
+        await tg_client.send_message(user.id, "*Ошибка!*\n_Расписание не обнаружено_", parse_mode=True)
     if message.button == 'export_ics':
         ics_export = await export.makeFile(2)
         print(await tg_client.send_document(user.id, ics_export, caption='Расписание для календаря', filename='PersonalTimetable.ics'))

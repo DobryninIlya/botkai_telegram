@@ -54,6 +54,8 @@ class ExportShedule(StudentShedule):
         today = datetime.date.today()
         current_date = today - datetime.timedelta(days=today.isoweekday()) + datetime.timedelta(days=1)
         isNormal, response = await super()._get_response()
+        if not response:
+            return False
         days_in_week = list(response.keys())
         days_in_week.sort()
 
