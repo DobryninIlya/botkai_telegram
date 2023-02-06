@@ -21,7 +21,7 @@ main_keyboard_teacher = [
     ["На завтра"],
     ["На сегодня", "На послезавтра"],
     ["Четность недели", "Полностью"],
-    ["Обратная связь"]
+    ["Обратная связь", 'Сбросить регистрацию']
 
 ]
 
@@ -71,7 +71,12 @@ other_functions = [
     [['Экспорт в календарь', 'export_ics']],
     [['Word документ', 'export_word']],
     [['График посещения занятий (для старосты)', 'export_entries_control']],
-    [['Баллы БРС', 'score_raiting']]
+    [['Баллы БРС', 'score_raiting']],
+    [['Сбросить регистрацию', 'reset_role']]
+]
+
+reset_role_commit = [
+    [['Продолжить', 'reset_role_commit']]
 ]
 
 
@@ -112,6 +117,8 @@ class keyboard:
             self.buttons = donate_link
         elif self.type_name == 'other_functions':
             self.buttons = other_functions
+        elif self.type_name == 'reset_role_commit':
+            self.buttons = reset_role_commit
 
     def get_profile(self):
         self.profile = profile

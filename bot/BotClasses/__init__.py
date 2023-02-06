@@ -5,3 +5,4 @@ from bot.BotClasses.Registration import *
 from bot.BotClasses.StudentShedule import *
 from bot.BotClasses.TeacherShedule import *
 from bot.BotClasses.Statistic import *
+from bot.BotClasses.Database_connection import connection, cursor, cursorR, conn
