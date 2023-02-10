@@ -9,17 +9,19 @@ from pprint import pprint
 from .User import User
 from .Message import Message
 from .Database_connection import cursor, connection, cursorR, conn
-
+from clients.tg.api import TgClient
 
 class StudentShedule:
-    def __init__(self, user: User, message: Message):
+    def __init__(self, user: User, message: Message, tg_client: TgClient):
+        self.user = user
+        self.tg_client = tg_client
         self.group_id = user.group_id
         self.BASE_URL = 'https://kai.ru/raspisanie'
         self.today = datetime.date.today()
         self.chetn = int(os.getenv("CHETN"))
 
     async def alert_for_differences(self, groupname: str, diff: str):
-        sql = "SELECT id FROM tg_users WHERE groupname={}'".format(groupname)
+        sql = "SELECT id FROM tg_users WHERE groupname={}".format(groupname)
         cursor.execute(sql)
         result = cursor.fetchall()
         diff += "\n*Изменения уже сохранены.*"
@@ -32,13 +34,13 @@ class StudentShedule:
 
     async def timetable_differences(self, old: list, new: list):
         week_elements = {
-            1: 'Понедельник',
-            2: 'Вторник',
-            3: 'Среда',
-            4: 'Четверг',
-            5: 'Пятница',
-            6: 'Суббота',
-            7: 'Воскресенье'
+            '1': 'Понедельник',
+            '2': 'Вторник',
+            '3': 'Среда',
+            '4': 'Четверг',
+            '5': 'Пятница',
+            '6': 'Суббота',
+            '7': 'Воскресенье',
         }
         if old != new:
             result = "*Обратите внимание!* \nИзменения в вашем расписании:\n"
@@ -46,11 +48,10 @@ class StudentShedule:
                 if new[day] != old[day]:
                     for lesson in new[day]:
                         if lesson not in old[day]:
-                            result += "*(+)*:: `{dayNum}| [{dayTime}] {dayDate} #{group} {disciplName}`\n".format(
+                            result += "*(+)*:: `{dayNum}| [{dayTime}] {dayDate} {disciplName}`\n".format(
                                 dayNum=week_elements[lesson['dayNum']],
                                 dayTime=lesson['dayTime'].rstrip(),
                                 dayDate=lesson['dayDate'].rstrip(),
-                                group=lesson['group'].rstrip(),
                                 disciplName=lesson['disciplName'].rstrip()
                             )
             await self.alert_for_differences(self.user.group_name, result)
