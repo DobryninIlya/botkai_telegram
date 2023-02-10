@@ -7,7 +7,7 @@ from clients.tg.api import TgClient
 
 
 async def processor(user: User, message: Message, tg_client: TgClient, callback_query=False, stage=None):
-    export = ExportShedule(user, message)
+    export = ExportShedule(user, message, tg_client)
     ics_export = await export.makeFile(2)
     if not ics_export:
         await tg_client.send_message(user.id, "*Ошибка!*\n_Расписание не обнаружено_", parse_mode=True)
