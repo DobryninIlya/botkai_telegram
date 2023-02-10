@@ -89,7 +89,7 @@ class TeacherShedule:
         else:
             date_update = result[1]
             timetable = result[2]
-            if date_update + datetime.timedelta(days=1) < self.today:  # Если старое, то обновить
+            if date_update + datetime.timedelta(days=1) < self.today:  # Если старое, то обновить и вернуть
                 try:
                     async with aiohttp.ClientSession() as session:
                         async with await session.post(self.BASE_URL_STAFF,
@@ -113,7 +113,6 @@ class TeacherShedule:
                     return True, json.loads(timetable)
             else:
                 return True, json.loads(timetable)
-
         return
 
     def _get_week_shedule(self, response):

@@ -18,6 +18,44 @@ class StudentShedule:
         self.today = datetime.date.today()
         self.chetn = int(os.getenv("CHETN"))
 
+    async def alert_for_differences(self, groupname: str, diff: str):
+        sql = "SELECT id FROM tg_users WHERE groupname={}'".format(groupname)
+        cursor.execute(sql)
+        result = cursor.fetchall()
+        diff += "\n*Изменения уже сохранены.*"
+        for elem in result:
+            try:
+                res = await self.tg_client.send_message(elem[0], diff, parse_mode=True)
+                print(res)
+            except:
+                print('Ошибка:\n', traceback.format_exc(), flush=True)
+
+    async def timetable_differences(self, old: list, new: list):
+        week_elements = {
+            1: 'Понедельник',
+            2: 'Вторник',
+            3: 'Среда',
+            4: 'Четверг',
+            5: 'Пятница',
+            6: 'Суббота',
+            7: 'Воскресенье'
+        }
+        if old != new:
+            result = "*Обратите внимание!* \nИзменения в вашем расписании:\n"
+            for day in sorted(new.keys()):
+                if new[day] != old[day]:
+                    for lesson in new[day]:
+                        if lesson not in old[day]:
+                            result += "*(+)*:: `{dayNum}| [{dayTime}] {dayDate} #{group} {disciplName}`\n".format(
+                                dayNum=week_elements[lesson['dayNum']],
+                                dayTime=lesson['dayTime'].rstrip(),
+                                dayDate=lesson['dayDate'].rstrip(),
+                                group=lesson['group'].rstrip(),
+                                disciplName=lesson['disciplName'].rstrip()
+                            )
+            await self.alert_for_differences(self.user.group_name, result)
+            return
+
     async def _get_response(self):
         sql = "SELECT * FROM saved_timetable WHERE groupp={}".format(self.group_id)
         cursor.execute(sql)
@@ -46,7 +84,7 @@ class StudentShedule:
         else:
             date_update = result[1]
             timetable = result[2]
-            if date_update + datetime.timedelta(days=2) < self.today:
+            if date_update + datetime.timedelta(days=2) < self.today: # Если старое, то обновить и вернуть
                 try:
                     async with aiohttp.ClientSession() as session:
                         async with await session.post(self.BASE_URL, data="groupId=" + str(self.group_id),
@@ -57,29 +95,17 @@ class StudentShedule:
                                                       timeout=3) as response:
                             response = await response.json(content_type='text/html')
                     assert json.dumps(response), "Расписание имеет некорректную форму"
+                    await self.timetable_differences(json.loads(timetable), response)
                     sql = "UPDATE saved_timetable SET shedule = '{}', date_update = '{}' WHERE groupp = {}".format(
                         json.dumps(response), datetime.date.today(), self.group_id)
                     cursor.execute(sql)
                     connection.commit()
                     return True, response
                 except:
+                    print('Ошибка (расписание):\n', traceback.format_exc(), flush=True)
                     return True, json.loads(timetable)
             else:
-                result = timetable
-                if len(result) < 10:
-                    try:
-                        async with aiohttp.ClientSession() as session:
-                            async with await session.post(self.BASE_URL, data="groupId=" + str(self.group_id),
-                                                          headers={'Content-Type': "application/x-www-form-urlencoded", "user-agent": "BOT RASPISANIE v.1"},
-                                                          params={
-                                                              "p_p_id": "pubStudentSchedule_WAR_publicStudentSchedule10",
-                                                              "p_p_lifecycle": "2", "p_p_resource_id": "schedule"},
-                                                          timeout=3) as response:
-                                response = await response.json(content_type='text/html')
-                        return True, response
-                    except:
-                        return True, ""
-                return True, json.loads(result)
+                return True, json.loads(timetable)
         return
 
     def _get_week_shedule(self, response):
