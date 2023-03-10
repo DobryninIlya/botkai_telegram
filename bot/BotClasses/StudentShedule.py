@@ -1,7 +1,7 @@
 import os
 import traceback
 
-import aiohttp
+import aiohttp, asyncio
 import datetime
 import json
 
@@ -45,15 +45,19 @@ class StudentShedule:
         if old != new:
             result = "*Обратите внимание!* \nИзменения в вашем расписании:\n"
             for day in sorted(new.keys()):
-                if new[day] != old[day]:
-                    for lesson in new[day]:
-                        if lesson not in old[day]:
-                            result += "*(+)*:: `{dayNum}| [{dayTime}] {dayDate} {disciplName}`\n".format(
-                                dayNum=week_elements[lesson['dayNum']],
-                                dayTime=lesson['dayTime'].rstrip(),
-                                dayDate=lesson['dayDate'].rstrip(),
-                                disciplName=lesson['disciplName'].rstrip()
-                            )
+                try:
+                    if new[day] != old[day]:
+                        for lesson in new[day]:
+                            if lesson not in old[day]:
+                                result += "*(+)*:: `{dayNum}| [{dayTime}] {dayDate} {disciplName}`\n".format(
+                                    dayNum=week_elements[lesson['dayNum']],
+                                    dayTime=lesson['dayTime'].rstrip(),
+                                    dayDate=lesson['dayDate'].rstrip(),
+                                    disciplName=lesson['disciplName'].rstrip()
+                                )
+                except KeyError:
+                    print("Ошибка в триггере обновления расписания. День:", day, flush=True)
+                    continue
             await self.alert_for_differences(self.user.group_name, result)
             return
 
@@ -102,6 +106,8 @@ class StudentShedule:
                     cursor.execute(sql)
                     connection.commit()
                     return True, response
+                except asyncio.exceptions.TimeoutError:
+                    print("Ошибка таймаута в расписании", flush=True)
                 except:
                     print('Ошибка (расписание):\n', traceback.format_exc(), flush=True)
                     return True, json.loads(timetable)
