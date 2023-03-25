@@ -1,4 +1,5 @@
 import json
+import datetime as dt
 from .User import User
 
 ##### Classic version (old)
@@ -50,6 +51,8 @@ profile = [
 feedback_create = [[['Продолжить', 'feedback_create']]]
 
 exit = [['Выход']]
+exit_inline = [[['Выход', 'main_menu']]]
+
 
 game_controls = [
     ['.', 'UP', '.'],
@@ -79,6 +82,68 @@ reset_role_commit = [
     [['Продолжить', 'reset_role_commit']]
 ]
 
+coworking_main = [
+    [['Моя бронь', 'coworking_rent_my']],
+    [['Бронировать', 'coworking_rent']],
+    [['Провести мероприятие', 'coworking_rent_event']],
+    [['Выход', 'coworking_main']]
+]
+
+coworking_staff = [
+    [['Одобрить заявки', 'coworking_accept']],
+    [['бронь СЕГОДНЯ', 'coworking_today']],
+    [['бронь ЗАВТРА', 'coworking_tomorrow']],
+    [['бронь НЕДЕЛЯ', 'coworking_week']],
+    [['Выход', 'coworking_staff']]
+]
+
+coworking_rent_accept = [
+    [['Одобрить', 'rent_accept']],
+    [['Отклонить', 'rent_decline']],
+    [['Выход', 'coworking_staff']]
+]
+
+
+def get_near_dates(days=7) -> [[[]]]:
+    result = []
+    datetime = dt.datetime.now()
+    datetime += dt.timedelta(days=1)
+
+    for day in range(days):
+        while datetime.weekday() in [5,6]:
+            datetime += dt.timedelta(days=1)
+
+        result.append([[datetime.strftime("%a:%d-%m-%Y"), 'coworking_setdate', str(datetime.strftime("%Y-%m-%d"))]])
+        datetime += dt.timedelta(days=1)
+    result.append([['Выход', 'main_menu']])
+    return result
+
+def get_near_time(start=9, stop=16) -> [[[]]]:
+    result = []
+    datetime = dt.datetime.now()
+    datetime += dt.timedelta(days=1)
+
+    for day in range(start, stop+1):
+        day = str(day)
+        if len(day) == 1:
+            day = "0"+day
+        result.append([[day, 'coworking_settime', day]])
+    result.append([['Выход', 'main_menu']])
+    return result
+
+def get_near_time_minute() -> [[[]]]:
+    result = []
+    datetime = dt.datetime.now()
+    datetime += dt.timedelta(days=1)
+
+    for day in range(0, 6):
+        day *=10
+        day = str(day)
+        if len(day) == 1:
+            day = "0"+day
+        result.append([[day, 'coworking_rent_time_minute', day]])
+    result.append([['Выход', 'main_menu']])
+    return result
 
 class keyboard:
     def __init__(self, type_name: str, user: User, buttons: list = None, payload=None):
@@ -93,6 +158,8 @@ class keyboard:
 
         elif self.type_name == 'exit':
             self.buttons = exit
+        elif self.type_name == 'exit_inline':
+            self.buttons = exit_inline
         elif self.type_name == 'registration_role':
             self.buttons = registration_role
         elif self.type_name == 'feedback':
@@ -119,6 +186,21 @@ class keyboard:
             self.buttons = other_functions
         elif self.type_name == 'reset_role_commit':
             self.buttons = reset_role_commit
+        elif self.type_name == 'coworking_main':
+            self.buttons = coworking_main
+        elif self.type_name == 'coworking_rent_date':
+            self.buttons = get_near_dates()
+        elif self.type_name == 'coworking_rent_time':
+            self.buttons = get_near_time()
+        elif self.type_name == 'coworking_rent_time_minute':
+            self.buttons = get_near_time_minute()
+        elif self.type_name == 'coworking_staff':
+            self.buttons = coworking_staff
+        elif self.type_name == 'coworking_rent_accept':
+            self.buttons = coworking_rent_accept
+            self.buttons[0][0].append(payload)
+            self.buttons[1][0].append(payload)
+            pass
 
     def get_profile(self):
         self.profile = profile
@@ -130,9 +212,10 @@ class keyboard:
         for button_row in self.buttons:
             button_row_list = []
             for button in button_row:
+                callback_data = "{" + f'"button":"{button[1]}","data":"{button[-1]}"' + "}"
                 button_ = {
                     'text': button[0],
-                    'callback_data': button[1]
+                    'callback_data': callback_data
                 }
                 button_row_list.append(button_)
             button_list.append(button_row_list)

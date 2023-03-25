@@ -4,6 +4,7 @@ import json
 class Message:
     def __init__(self, update):
         self.button = None
+        self.button_data = None
         if 'message' in update.keys():
             self.message = update['message']
             self.language_code = self.message['from']['language_code']
@@ -12,10 +13,11 @@ class Message:
         elif 'callback_query' in update.keys():
             self.message = update['callback_query']['message']
             self.callback_query_id = update['callback_query']['id']
-            self.data = update['callback_query']['data']
+            self.data = json.loads(update['callback_query']['data'])
             self.from_id = self.message['chat']['id']
             try:
-                self.button = json.loads(self.data)['button']
+                self.button = self.data['button']
+                self.button_data = self.data['data']
             except:
                 self.button = self.data
         else:

@@ -81,6 +81,8 @@ async def message_handler(update, tg_client, debug=False):
     if not len(message.text) and not message.callback_query_id and not stage.status:
         return
     for c in command_list:
+        if c.admlevel > user.admLevel:
+            continue
         if message.callback_query_id:
             if message.button in c.payload and user.role in c.role:
                 await c.process(user, message, tg_client, stage=stage)

@@ -16,4 +16,5 @@ command = command_class()
 command.keys = ["stat"]
 command.process = processor
 command.role = [1]
+command.admlevel = 2
 ############# add admin verification
