@@ -51,9 +51,18 @@ async def processor(user: User, message: Message, tg_client: TgClient, callback_
             msg = "Данный день загружен полностью. Выберите другую дату"
             await tg_client.edit_message(user.id, message.message_id, keyboard('coworking_rent_date', user).get_inline_keyboard(), msg)
             return
-        sql = f"INSERT INTO coworking_rent (tg_user, status, date, time) VALUES ({user.id}, 0, '{date}', '00:00:00')"
-        cursor.execute(sql)
-        connection.commit()
+        try:
+            sql = f"INSERT INTO coworking_rent (tg_user, status, date, time) VALUES ({user.id}, 0, '{date}', '00:00:00')"
+            cursor.execute(sql)
+            connection.commit()
+        except:
+            print(sql)
+            print('Ошибка:\n', traceback.format_exc(), flush=True)
+            msg = "Данное действие не разрешено"
+            await tg_client.edit_message(user.id, message.message_id,
+                                         keyboard('coworking_rent_date', user).get_inline_keyboard(), msg)
+            return
+
         msg = "Выбрана дата: " + date + "\nВыберите час:"
         await tg_client.edit_message(user.id, message.message_id, keyboard('coworking_rent_time', user).get_inline_keyboard(), msg)
         return
