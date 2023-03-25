@@ -84,6 +84,12 @@ async def processor(user: User, message: Message, tg_client: TgClient, callback_
         sql = f"UPDATE coworking_rent SET status = 3 WHERE id={message.button_data}"
         cursor.execute(sql)
         connection.commit()
+        sql = f"SELECT tg_user FROM coworking_rent WHERE id={message.button_data} ORDER BY date DESC LIMIT 1"
+        cursor.execute(sql)
+        result = cursor.fetchone()[0]
+        accept_message = "Ваша заявка на коворкинг отклонена"
+        await tg_client.send_message(result, accept_message,
+                                     keyboard('coworking_main', user).get_inline_keyboard())
         rents = get_last_rent()
         msg = "====RENT====\n"
         id = 0
