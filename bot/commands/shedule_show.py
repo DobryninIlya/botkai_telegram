@@ -66,7 +66,7 @@ async def processor(user: User, message: Message, tg_client: TgClient, callback_
         msg = f"_Расписание на_ *{week[day].lower()}*\n"
         day_count = getWeekDayNum(day)
         shedule = await StudentShedule(user, message, tg_client).showTimetable(user.group_id, day_count)
-        msg += shedule
+        msg += shedule if shedule else "Нет данных"
         await tg_client.edit_message(user.id, message.message_id,
                                      keyboard('week_shedule', user).get_inline_keyboard(), msg, parse_mode=True)
         return
