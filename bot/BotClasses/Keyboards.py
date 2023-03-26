@@ -12,7 +12,7 @@ from .User import User
 # ]
 main_keyboard = [
     ["На завтра"],
-    ["На сегодня", "На послезавтра"],
+    ["На сегодня", "На послезавтра", "По дням"],
     ["Четность недели", "Полностью"],
     ["Разное", "Преподаватели"],
     ["Обратная связь", "Донат", "Профиль"]
@@ -101,6 +101,11 @@ coworking_rent_accept = [
     [['Одобрить', 'rent_accept']],
     [['Отклонить', 'rent_decline']],
     [['Выход', 'coworking_staff']]
+]
+week_shedule = [
+    [['Понедельник', 'shed_week', 1], ['Вторник', 'shed_week', 2], ['Среда', 'shed_week', 3]],
+    [['Четверг', 'shed_week', 4], ['Пятница', 'shed_week', 5], ['Суббота', 'shed_week', 6]],
+
 ]
 
 
@@ -200,7 +205,8 @@ class keyboard:
             self.buttons = coworking_rent_accept
             self.buttons[0][0].append(payload)
             self.buttons[1][0].append(payload)
-            pass
+        elif self.type_name == 'week_shedule':
+            self.buttons = week_shedule
 
     def get_profile(self):
         self.profile = profile

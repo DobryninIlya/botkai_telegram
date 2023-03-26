@@ -51,7 +51,7 @@ class TgClient:
         except:
             print('Ошибка:\n', traceback.format_exc())
 
-    async def edit_message(self, chat_id: int, message_id: str, buttons, message:str):
+    async def edit_message(self, chat_id: int, message_id: str, buttons, message:str, parse_mode=None):
         try:
             url = self.get_url("editMessageText")
             payload = {
@@ -61,6 +61,8 @@ class TgClient:
             }
             if buttons or type(buttons) == type([]):
                 payload['reply_markup'] = buttons
+            if parse_mode:
+                payload['parse_mode'] = 'Markdown'
             async with aiohttp.ClientSession() as session:
                 async with session.post(url, json=payload) as resp:
                     res_dict = await resp.json()

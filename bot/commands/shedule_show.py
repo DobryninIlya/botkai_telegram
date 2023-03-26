@@ -1,5 +1,5 @@
 import random
-
+import datetime
 from ..BotClasses import Command as command_class, traceback
 from ..BotClasses import User, Message, StudentShedule
 from ..BotClasses.Keyboards import keyboard
@@ -12,10 +12,34 @@ frazi = ["Можно сходить в кино 😚", "Можно почита�
          "Можно встретиться с друзьями 😚"]
 
 
+def getWeekDayNum(day):
+    today = datetime.date.today()
+    current_day = today.isoweekday()
+    date_day = 0
+    if day < current_day:
+        date_day = 7 - current_day + day
+    elif day == current_day:
+        date_day = 7
+    else:
+        date_day = day - current_day
+    return date_day
+
+week = {
+    1: 'Понедельник',
+    2: 'Вторник',
+    3: 'Среда',
+    4: 'Четверг',
+    5: 'Пятница',
+    6: 'Суббота',
+    7: 'Воскресенье'
+}
+
 async def processor(user: User, message: Message, tg_client: TgClient, callback_query=False, stage=None):
     day_count = 0
     text = message.text.lower()
     day_week = ''
+
+    getWeekDayNum(1)
     if text in ['на завтра', 'расписание на завтра', 'завтра', 'tomorrow']:
         day_week = "Завтра"
         day_count = 1
@@ -32,6 +56,20 @@ async def processor(user: User, message: Message, tg_client: TgClient, callback_
         day_count = -2
     elif text in ['четность', 'какая неделя', 'какая сейчас неделя', 'четность недели']:
         day_count = -3
+    elif text in ['по дням', 'понедельник', 'вторник', 'среда', 'четверг', 'пятница', 'суббота']:
+        msg = 'По дням недели'
+        await tg_client.send_message(user.id, msg, buttons=keyboard('week_shedule', user).get_inline_keyboard(),
+                                     parse_mode=True)
+        return
+    elif message.button == 'shed_week':
+        day = int(message.button_data)
+        msg = f"_Расписание на_ *{week[day].lower()}*\n"
+        day_count = getWeekDayNum(day)
+        shedule = await StudentShedule(user, message, tg_client).showTimetable(user.group_id, day_count)
+        msg += shedule
+        await tg_client.edit_message(user.id, message.message_id,
+                                     keyboard('week_shedule', user).get_inline_keyboard(), msg, parse_mode=True)
+        return
     shedule = await StudentShedule(user, message, tg_client).showTimetable(user.group_id, day_count)
     if day_count == -3:
         msg = 'Четная' if shedule else 'Нечетная'
@@ -59,7 +97,9 @@ command.keys = ['на завтра', 'расписание на завтра', '
                 'на послезавтра', 'расписание на послезавтра', 'послезавтра', 'afterday',
                 'полностью', 'расписание полностью', 'shedule',
                 'преподаватели', 'мои преподаватели', 'преподы',
-                'четность', 'какая неделя', 'какая сейчас неделя', 'четность недели'
+                'четность', 'какая неделя', 'какая сейчас неделя', 'четность недели',
+                'по дням', 'понедельник', 'вторник', 'среда', 'четверг', 'пятница', 'суббота'
                 ]
 command.process = processor
 command.role = [1]
+command.payload = ['shed_week']

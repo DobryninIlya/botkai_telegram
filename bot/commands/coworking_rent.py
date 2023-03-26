@@ -98,10 +98,10 @@ async def processor(user: User, message: Message, tg_client: TgClient, callback_
 
     elif message.button == 'coworking_main':
         msg = """Коворкинг работает в будни с 9:00 до 17:00 в будние дни. 
-                    В выходные и праздничные дни возможности забронировать место нет.
-                    Также вы можете согласовать проведения мероприятия в любой удобный день.
-                    * Информация может быть дополнена
-                    """
+В выходные и праздничные дни возможности забронировать место нет.
+Также вы можете согласовать проведения мероприятия в любой удобный день.
+* Информация может быть дополнена
+"""
         await tg_client.edit_message(user.id, message.message_id,
                                      keyboard('coworking_main', user).get_inline_keyboard(), msg)
     else:
