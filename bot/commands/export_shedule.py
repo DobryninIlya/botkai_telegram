@@ -26,4 +26,4 @@ command = command_class()
 command.keys = ["export icalendar", 'экспорт в календарь', 'word документ']
 command.process = processor
 command.role = [1]
-command.payload = ['export_ics', 'export_word', 'export_entries_control']
+command.payload = ['export_ics', 'export_word', 'export_control']

@@ -8,9 +8,6 @@ from ..BotClasses.Stage_handler import Stage
 from ..BotClasses.DB_values import Value
 from clients.tg.api import TgClient
 
-_admin_id = 393867797
-media_group_id_list = []
-
 
 async def processor(user: User, message: Message, tg_client: TgClient, callback_query=False, stage=None):
     if message.text.lower() == 'разное':

@@ -73,7 +73,7 @@ donate_link = [[['Отправить перевод', 'https://www.tinkoff.ru/cf
 other_functions = [
     [['Экспорт в календарь', 'export_ics']],
     [['Word документ', 'export_word']],
-    [['График посещения занятий (для старосты)', 'export_entries_control']],
+    [['График посещения занятий (для старосты)', 'export_control']],
     [['Баллы БРС', 'score_raiting']],
     [['Сбросить регистрацию', 'reset_role']]
 ]
