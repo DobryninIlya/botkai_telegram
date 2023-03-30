@@ -37,8 +37,8 @@ class GroupChange:
             group = int(self.group_name)
             if group < 1000 or group > 100000:
                 raise AssertionError
-            group_id = await self._show_groupId(group)
-            if not group_id:
+            isOk, group_id = await self._show_groupId(group)
+            if not isOk:
                 raise TypeError
         except AssertionError:
             return False, "Ты ввел некорректный номер группы. Повтори ввод номера группы."
@@ -48,7 +48,7 @@ class GroupChange:
                           "Повтори ввод."
         except:
             return False, "Совсем не могу разобрать что ты ввел! Повтори ввод номера группы."
-        self.group_id = await self._show_groupId(self.group_name)
+        _, self.group_id = await self._show_groupId(self.group_name)
         return self.save_changes()
 
     def _execute(self, sql_query):
@@ -74,7 +74,7 @@ class GroupChange:
             today = datetime.date.today()
             date = datetime.date(today.year, today.month, today.day)
             if date_update == date:
-                return group
+                return True, group
             else:
                 async with aiohttp.ClientSession() as session:
                     async with await session.post(
@@ -90,7 +90,7 @@ class GroupChange:
                 connection.commit()
             group, _ = await getGroupsResponse(groupNumber)
             if group:
-                return group
+                return True, group
             print('Ошибка:\n', traceback.format_exc())
             return False, 'Ошибка'
         except aiohttp.ServerConnectionError:
@@ -103,6 +103,6 @@ class GroupChange:
         except:
             group, _ = await getGroupsResponse(groupNumber)
             if group:
-                return group
+                return True, group
             print('Ошибка:\n', traceback.format_exc())
             return False, 'Ошибка'
