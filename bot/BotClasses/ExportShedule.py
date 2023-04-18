@@ -23,6 +23,7 @@ tt_dict = {
     "16:50:00": "13:50:00",
     "18:25:00": "15:25:00",
     "20:00:00": "17:00:00",
+
 }
 
 path = ''
@@ -91,7 +92,7 @@ class ExportShedule(StudentShedule):
 
                     e = Event()
                     tt = row["dayTime"].rstrip() if len(row["dayTime"].rstrip()) < 6 else row["dayTime"].rstrip()[:5]
-                    tt = tt_dict[tt]
+                    tt = tt_dict.get(tt, tt)
                     begin_time = str(current_date) + " {}:00".format(tt)
                     # end_time = str(current_date) + " {}:00".format(time_dict[row["dayTime"].rstrip()])
                     e.name = prefix + row["disciplType"].rstrip().upper() + " " + row["disciplName"].rstrip()
