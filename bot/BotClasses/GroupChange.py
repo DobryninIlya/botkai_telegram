@@ -48,7 +48,9 @@ class GroupChange:
                           "Повтори ввод."
         except:
             return False, "Совсем не могу разобрать что ты ввел! Повтори ввод номера группы."
-        _, self.group_id = await self._show_groupId(self.group_name)
+        isOk, self.group_id = await self._show_groupId(self.group_name)
+        if not isOk:
+            return False, "Такой группы нет."
         return self.save_changes()
 
     def _execute(self, sql_query):
