@@ -108,6 +108,10 @@ week_shedule = [
 
 ]
 
+notifyer_change = [
+    [['Изменить', 'notifier_change']]
+]
+
 
 def get_near_dates(days=7) -> [[[]]]:
     result = []
@@ -207,6 +211,8 @@ class keyboard:
             self.buttons[1][0].append(payload)
         elif self.type_name == 'week_shedule':
             self.buttons = week_shedule
+        elif self.type_name == 'notifier_change':
+            self.buttons = notifyer_change
 
     def get_profile(self):
         self.profile = profile
