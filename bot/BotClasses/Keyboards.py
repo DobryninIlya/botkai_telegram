@@ -44,6 +44,7 @@ profile = [
     [['Поддержать проект', 'donate']],
     [['Ссылки на одногруппников', 'classmates_links']],
     [['Студенты группы', 'classmates_list']],
+    [['Изменения в расписании', 'notifier_change_menu']],
     [['Мой институт', 'my_faculty']]  # , ['Подписки', 'subscriptions']],
     # [['{}', 'starosta']]
 ]
@@ -110,6 +111,10 @@ week_shedule = [
 
 notifyer_change = [
     [['Изменить', 'notifier_change']]
+]
+
+notifyer_change_UPDATER_SCRIPT = [
+    [['Оповещения', 'notifier_change_us']]
 ]
 
 
@@ -212,6 +217,8 @@ class keyboard:
         elif self.type_name == 'week_shedule':
             self.buttons = week_shedule
         elif self.type_name == 'notifier_change':
+            self.buttons = notifyer_change
+        elif self.type_name == 'notifyer_change_UPDATER_SCRIPT':
             self.buttons = notifyer_change
 
     def get_profile(self):

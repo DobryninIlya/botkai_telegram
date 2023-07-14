@@ -42,4 +42,4 @@ command = command_class()
 command.keys = ["изменить оповещения", "оповещения изменить", "изменения в расписании", "управление оповещениями"]
 command.process = processor
 command.role = [1]
-command.payload = ["notifier_change"]
+command.payload = ["notifier_change", "notifier_change_menu"]
