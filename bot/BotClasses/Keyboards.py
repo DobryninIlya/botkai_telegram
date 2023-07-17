@@ -44,7 +44,7 @@ profile = [
     [['Поддержать проект', 'donate']],
     [['Ссылки на одногруппников', 'classmates_links']],
     [['Студенты группы', 'classmates_list']],
-    [['Изменения в расписании', 'notifier_change_menu']],
+    [['Изменения в расписании ', 'notifier_change_menu']],
     [['Мой институт', 'my_faculty']]  # , ['Подписки', 'subscriptions']],
     # [['{}', 'starosta']]
 ]
@@ -114,7 +114,7 @@ notifyer_change = [
 ]
 
 notifyer_change_UPDATER_SCRIPT = [
-    [['Оповещения', 'notifier_change_us']]
+    [['Оповещения', 'notifier_change_menu']]
 ]
 
 
