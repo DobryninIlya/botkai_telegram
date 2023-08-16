@@ -65,7 +65,7 @@ class StudentShedule:
         sql = "SELECT * FROM saved_timetable WHERE groupp={}".format(self.group_id)
         cursor.execute(sql)
         result = cursor.fetchone()
-        if result == None:
+        if result == None or result[2]=='{}':
             try:
                 async with aiohttp.ClientSession() as session:
                     async with await session.post(self.BASE_URL, data="groupId=" + str(self.group_id),

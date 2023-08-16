@@ -100,7 +100,7 @@ class GroupChange:
         except (ConnectionError, TimeoutError, aiohttp.ServerTimeoutError, aiohttp.ServerConnectionError):
             group, _ = await getGroupsResponse(groupNumber)
             if group:
-                return group, ''
+                return '', group
             return False, "&#9888;Ошибка подключения к серверам.&#9888; \n Вероятно, на стороне kai.ru произошел сбой. Вам необходимо продолжить регистрацию (ввод номера группы) как только сайт kai.ru станет доступным."
         except:
             group, _ = await getGroupsResponse(groupNumber)

@@ -17,10 +17,10 @@ def start_of_school_year():
 async def processor(user: User, message: Message, tg_client: TgClient, callback_query=False, stage=None):
     if message.button == 'drop_groups_new_year' or message.text == "drop_groups_new_year":
         print("ОЧИСТКА НОМЕРОВ ГРУПП СТАРОГО УЧЕБНОГО ГОДА")
-        sql = "UPDATE tg_users SET groupid = 0"
-        cursor.execute(sql)
+        sql = "UPDATE public.tg_users SET groupid = 0 WHERE groupid>0"
+        res = cursor.execute(sql)
         connection.commit()
-        await tg_client.send_message(user.id, "ОЧИСТКА НОМЕРОВ ГРУПП СТАРОГО УЧЕБНОГО ГОДА ПРОИЗВЕДЕНА", parse_mode=True)
+        await tg_client.send_message(user.id, "*ОЧИСТКА НОМЕРОВ ГРУПП СТАРОГО УЧЕБНОГО ГОДА ПРОИЗВЕДЕНА*", parse_mode=True)
 
     return
 
@@ -31,4 +31,4 @@ command.keys = ["drop_groups_new_year"]
 command.process = processor
 command.role = [1]
 command.payload = ['drop_groups_new_year']
-command.admlevel = 50
+command.admlevel = 2
