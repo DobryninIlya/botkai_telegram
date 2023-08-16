@@ -34,7 +34,7 @@ week = {
     7: 'Воскресенье'
 }
 
-def groupid_assert(user: User, tg_client: TgClient):
+async def groupid_assert(user: User, tg_client: TgClient):
     if user.group_id == 0:
         await tg_client.send_message(user.id, "*Номер вашей группы установлен в прошлом году.*", buttons=keyboard('group_change', user).get_inline_keyboard(), parse_mode=True)
         return False
@@ -43,7 +43,7 @@ async def processor(user: User, message: Message, tg_client: TgClient, callback_
     day_count = 0
     text = message.text.lower()
     day_week = ''
-    if not groupid_assert(user, tg_client):
+    if not await groupid_assert(user, tg_client):
         return
     getWeekDayNum(1)
     if text in ['на завтра', 'расписание на завтра', 'завтра', 'tomorrow']:
