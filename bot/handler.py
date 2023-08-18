@@ -112,3 +112,4 @@ async def message_handler(update, tg_client, debug=False):
     if message.callback_query_id:
         return
     await tg_client.send_message(user.id, "Я не понимаю тебя :(", buttons=keyboard('main_keyboard', user).get_keyboard())
+    stage._set_status(0)
