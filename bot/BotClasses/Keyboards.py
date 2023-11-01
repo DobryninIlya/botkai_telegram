@@ -45,7 +45,8 @@ profile = [
     [['Ссылки на одногруппников', 'classmates_links']],
     [['Студенты группы', 'classmates_list']],
     [['Изменения в расписании ', 'notifier_change_menu']],
-    [['Мой институт', 'my_faculty']]  # , ['Подписки', 'subscriptions']],
+    [['Мой институт', 'my_faculty']],  # , ['Подписки', 'subscriptions']],
+    [['Чат студентов', 'chat']]
     # [['{}', 'starosta']]
 ]
 
@@ -70,6 +71,7 @@ game_over = [['с']]
 group_change = [[['Изменить', 'group_change_commit']]]
 answer_feedback = [[['Ответить пользователю', 'answer_feedback']]]
 donate_link = [[['Отправить перевод', 'https://www.tinkoff.ru/cf/7EDMYnSmO68']]]
+invite_to_chat = [[['Присоединиться к чату', 'https://t.me/+8WYDQ7AmpfI4ZDVi']]]
 
 other_functions = [
     [['Экспорт в календарь', 'export_ics']],
@@ -220,6 +222,8 @@ class keyboard:
             self.buttons = notifyer_change
         elif self.type_name == 'notifyer_change_UPDATER_SCRIPT':
             self.buttons = notifyer_change
+        elif self.type_name == 'invite_to_chat':
+            self.buttons = invite_to_chat
 
     def get_profile(self):
         self.profile = profile

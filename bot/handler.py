@@ -44,7 +44,7 @@ def damerau_levenshtein_distance(s1, s2):
 
 
 async def message_handler(update, tg_client, debug=False):
-    ignore_list = ['channel_post', 'edited_channel_post', 'my_chat_member']
+    ignore_list = ['channel_post', 'edited_channel_post', 'my_chat_member', 'edited_message']
     for i in ignore_list:
         if i in update.keys():
             return
