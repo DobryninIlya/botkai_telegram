@@ -254,7 +254,7 @@ class StudentShedule:
                         para_list.append(para_structure)
             for para in para_list:
                 # result += "➤ *{dayDate} ⌛{dayTime} {disciplType}* _{disciplName}_ {audNum} {buildNum}зд. \n".format(
-                result += "➤ {dayDate} ⌛{dayTime} {disciplType} ```{disciplName}``` {audNum} {buildNum}зд. \n".format(
+                result += "➤ {dayDate} ⌛{dayTime} {disciplType} ```\n{disciplName}``` {audNum} {buildNum}зд. \n".format(
                     dayDate=para['dayDate'],
                     disciplType=para['disciplType'],
                     disciplName=para['disciplName'],
