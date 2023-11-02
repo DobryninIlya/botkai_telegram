@@ -14,7 +14,7 @@ def run():
             token = '5510894762:AAH40UTqeEDFlvzKyx7TpRO4_w_qlQYu04o'
     except:
         token = os.getenv("TG_TOKEN")
-    bot = Bot(token, 5)
+    bot = Bot(token, 15)
     try:
         print('bot has been started', flush=True)
         loop.create_task(bot.start())
