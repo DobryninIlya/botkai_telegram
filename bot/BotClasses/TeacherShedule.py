@@ -47,16 +47,21 @@ class TeacherShedule:
         if old != new:
             result = "*Обратите внимание!* \nИзменения в вашем расписании:\n"
             for day in sorted(new.keys()):
-                if new[day] != old[day]:
-                    for lesson in new[day]:
-                        if lesson not in old[day]:
-                            result += "*(+)*:: `{dayNum}| [{dayTime}] {dayDate} #{group} {disciplName}`\n".format(
-                                dayNum=week_elements[lesson['dayNum']],
-                                dayTime=lesson['dayTime'].rstrip(),
-                                dayDate=lesson['dayDate'].rstrip(),
-                                group=lesson['group'].rstrip(),
-                                disciplName=lesson['disciplName'].rstrip()
-                            )
+                try:
+                    if new[day] != old[day]:
+                        for lesson in new[day]:
+                            if lesson not in old[day]:
+                                result += "*(+)*:: `{dayNum}| [{dayTime}] {dayDate} #{group} {disciplName}`\n".format(
+                                    dayNum=week_elements[lesson['dayNum']],
+                                    dayTime=lesson['dayTime'].rstrip(),
+                                    dayDate=lesson['dayDate'].rstrip(),
+                                    group=lesson['group'].rstrip(),
+                                    disciplName=lesson['disciplName'].rstrip()
+                                )
+                except KeyError:
+                    result += "*{dayNum} пары убраны*\n".format(
+                        dayNum=week_elements[int(day)]
+                    )
             await self.alert_for_differences(self.user.login.rstrip(), result)
             return
 
