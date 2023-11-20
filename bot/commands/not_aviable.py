@@ -19,4 +19,4 @@ command = command_class()
 command.keys = ["задания и объявления", 'пожертвования', 'график посещения занятий (для старосты)', 'баллы брс']
 command.process = processor
 command.role = [1, 2]
-command.payload = ['group_members', 'my_groups_list', 'my_faculty', 'score_raiting', 'export_entries_control']
+command.payload = ['group_members', 'my_groups_list', 'my_faculty', 'export_entries_control']

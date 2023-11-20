@@ -77,9 +77,14 @@ other_functions = [
     [['Экспорт в календарь', 'export_ics']],
     [['Word документ', 'export_word']],
     [['График посещения занятий (для старосты)', 'export_control']],
-    [['Баллы БРС', 'score_raiting']],
+    [['Баллы БРС', 'score_rating']],
     [['Сбросить регистрацию', 'reset_role']]
 ]
+
+attestation_auth = [
+    [['Авторизоваться в КапиПаре', 'attestation_auth']]
+]
+
 
 reset_role_commit = [
     [['Продолжить', 'reset_role_commit']]
@@ -224,6 +229,10 @@ class keyboard:
             self.buttons = notifyer_change
         elif self.type_name == 'invite_to_chat':
             self.buttons = invite_to_chat
+        elif self.type_name == 'attestation':
+            self.buttons = buttons
+        elif self.type_name == 'att_open':
+            self.buttons = buttons
 
     def get_profile(self):
         self.profile = profile
