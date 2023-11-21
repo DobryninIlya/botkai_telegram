@@ -55,7 +55,7 @@ async def processor(user: User, message: Message, tg_client: TgClient, callback_
             url = auth_path.format(domain, user.id, redirect, sign)
             params = url.split('?')
             params = params[1]
-            msg = "Войдите в ваш аккаунт КАИ на портале авторизации КапиПары:"
+            msg = "Войдите в ваш аккаунт КАИ на портале авторизации КапиПары.\n Для последующего просмотра БРС без ввода пароля - нажмитен на кнопку 'Баллы БРС' в меню 'Разное' еще раз. "
             button = button_template
             params = params.replace("=", "%3D")
             params = params.replace("&", "___")
