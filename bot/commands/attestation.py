@@ -41,6 +41,7 @@ async def processor(user: User, message: Message, tg_client: TgClient, callback_
     if not (4000 < user.group_name < 5000):
         msg = "Функционал пока не доступен для вас."
         await tg_client.send_message(user.id, msg)
+        return
     if message.button == "score_rating":
         if check_user_registration(user.id) != None:
             msg = "Баллы аттестации. Обратите внимание, страница может загружаться до 1 минуты."
@@ -57,7 +58,7 @@ async def processor(user: User, message: Message, tg_client: TgClient, callback_
             url = auth_path.format(domain, user.id, redirect, sign)
             params = url.split('?')
             params = params[1]
-            msg = "Войдите в ваш аккаунт КАИ на портале авторизации КапиПары.\n Для последующего просмотра БРС без ввода пароля - нажмитен на кнопку 'Баллы БРС' в меню 'Разное' еще раз. "
+            msg = "Войдите в ваш аккаунт КАИ на портале авторизации КапиПары.\n Для последующего просмотра БРС без ввода пароля - нажмите на кнопку 'Баллы БРС' в меню 'Разное' еще раз. "
             button = button_template
             params = params.replace("=", "%3D")
             params = params.replace("&", "___")
