@@ -38,10 +38,6 @@ def get_sign(path: str):
     except:
         return None
 async def processor(user: User, message: Message, tg_client: TgClient, callback_query=False, stage=None):
-    if not (4000 < user.group_name < 5000):
-        msg = "Функционал пока не доступен для вас."
-        await tg_client.send_message(user.id, msg)
-        return
     if message.button == "score_rating":
         if check_user_registration(user.id) != None:
             msg = "Баллы аттестации. Обратите внимание, страница может загружаться до 1 минуты."
