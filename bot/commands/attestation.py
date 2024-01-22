@@ -63,8 +63,6 @@ async def processor(user: User, message: Message, tg_client: TgClient, callback_
             await tg_client.send_message(user.id, msg, buttons=keyboard('attestation', user, buttons=button).get_link())
 
         return
-
-
     return
 
 
@@ -74,4 +72,4 @@ command.keys = ["аттестация"]
 command.process = processor
 command.role = [1]
 command.payload = ['attestation_open', 'score_rating', 'attestation_auth']
-command.status_list = [110, 111]
+# command.status_list = [110, 111]
