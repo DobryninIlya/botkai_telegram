@@ -74,10 +74,16 @@ class StudentShedule:
                                                           "p_p_lifecycle": "2", "p_p_resource_id": "schedule"},
                                                   timeout=3) as response:
                         response = await response.json(content_type='text/html')
-                sql = "INSERT INTO saved_timetable VALUES ({}, '{}', '{}')".format(self.group_id, datetime.date.today(),
-                                                                                   json.dumps(response))
-                cursor.execute(sql)
-                connection.commit()
+                try:
+                    sql = "INSERT INTO saved_timetable VALUES ({}, '{}', '{}')".format(self.group_id, datetime.date.today(),
+                                                                                       json.dumps(response))
+                    cursor.execute(sql)
+                    connection.commit()
+                except:
+                    sql = "UPDATE saved_timetable SET shedule = '{}', date_update='{}' WHERE groupp ({}, '{}', '{}')".format(json.dumps(response),
+                                                                                       datetime.date.today(), self.group_id)
+                    cursor.execute(sql)
+                    connection.commit()
                 return True, response
             except ConnectionError as err:
                 return False, "&#9888;Ошибка подключения к серверу типа ConnectionError. Вероятно, сервера КАИ были выведены из строя.&#9888;"
