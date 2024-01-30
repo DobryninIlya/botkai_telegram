@@ -88,10 +88,10 @@ class Registration:
         except Exception as e:
             # Обработка исключения
             return False
-        
+
     async def processing(self):
         in_base = self._check_in_base()
-        if not await self.check_subcription():
+        if not await self.check_subscription():
             return False, 'Чтобы пользоваться ботом, вам необходимо подписаться на канал! @botkainews', keyboard(
                 'registration_role', self.user).get_keyboard()
         if in_base:
