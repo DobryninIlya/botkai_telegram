@@ -80,7 +80,7 @@ class StudentShedule:
                     cursor.execute(sql)
                     connection.commit()
                 except:
-                    sql = "UPDATE saved_timetable SET shedule = '{}', date_update='{}' WHERE groupp ({}, '{}', '{}')".format(json.dumps(response),
+                    sql = "UPDATE saved_timetable SET shedule = '{}', date_update='{}' WHERE groupp ={}".format(json.dumps(response),
                                                                                        datetime.date.today(), self.group_id)
                     cursor.execute(sql)
                     connection.commit()

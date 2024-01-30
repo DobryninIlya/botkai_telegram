@@ -1,5 +1,6 @@
 import json
 import traceback
+from cachetools import TTLCache
 from datetime import datetime
 
 import aiohttp
@@ -44,6 +45,7 @@ class Registration:
         self.login = ''
         self.tg_client = tg_client
         self.debug = debug
+        self.subscription_cache = TTLCache(maxsize=1000, ttl=20 * 60)
 
     def _get_status_code(self):
         sql = "SELECT Status FROM Status WHERE ID = {}".format(self.id)
@@ -66,18 +68,27 @@ class Registration:
         finally:
             self.conn.commit()
 
-    async def check_subcription(self):
+    async def check_subscription(self):
         if self.debug:
             return True
+
+        # Проверяем, есть ли результат проверки подписки в кэше
+        if self.user.id in self.subscription_cache:
+            return self.subscription_cache[self.user.id]
+
         try:
             result = await self.tg_client.get_chat_member(user_id=self.user.id)
-            if result['result']['status'] != 'left':
-                return True
-            else:
-                raise Exception
-        except:
+            # Обновляем кэш с результатом проверки подписки
+            self.subscription_cache[self.user.id] = result['result']['status'] != 'left'
+            if result['result']['status'] == 'kicked':
+                msg = "Вы были заблокированы за нарушение правил. Если вы считаете, что произошла ошибка, напишите @dobryninilya"
+                await self.tg_client.send_message(self.user.id, msg, parse_mode="Markdown")
+                return
+            return result['result']['status'] != 'left'
+        except Exception as e:
+            # Обработка исключения
             return False
-
+        
     async def processing(self):
         in_base = self._check_in_base()
         if not await self.check_subcription():

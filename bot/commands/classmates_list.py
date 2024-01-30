@@ -24,7 +24,7 @@ async def processor(user: User, message: Message, tg_client: TgClient, callback_
     soup = BeautifulSoup(response, 'lxml')
     list_students = soup.find(id="p_p_id_infoClick_WAR_infoClick10_")
     result = ""
-    if not response or not list_students:
+    if not response or not list_students or not list_students.find_all("td"):
         msg = "Данные не найдены на сайте КАИ."
         await tg_client.send_message(user.id, msg)
     for tag in list_students.find_all("td"):
