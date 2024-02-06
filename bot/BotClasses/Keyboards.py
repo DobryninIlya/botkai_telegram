@@ -72,6 +72,7 @@ group_change = [[['Изменить', 'group_change_commit']]]
 answer_feedback = [[['Ответить пользователю', 'answer_feedback']]]
 donate_link = [[['Отправить перевод', 'https://www.tinkoff.ru/cf/7EDMYnSmO68']]]
 invite_to_chat = [[['Присоединиться к чату', 'https://t.me/+8WYDQ7AmpfI4ZDVi']]]
+boost_keyboard = [[['Отдать бусты', 'https://t.me/boost/botkainews']]]
 
 other_functions = [
     [['Экспорт в календарь', 'export_ics']],
@@ -203,6 +204,8 @@ class keyboard:
             self.buttons = answer_feedback
         elif self.type_name == 'donate_link':
             self.buttons = donate_link
+        elif self.type_name == 'boost_keyboard':
+            self.buttons = boost_keyboard
         elif self.type_name == 'other_functions':
             self.buttons = other_functions
         elif self.type_name == 'reset_role_commit':

@@ -1,7 +1,8 @@
 import os
 import importlib
 
-from bot.BotClasses import command_list, Message, User, Registration, traceback, statistic_updates, statistic_users_active_list, statistic_users_active
+from bot.BotClasses import command_list, Message, User, Registration, traceback, statistic_updates, \
+    statistic_users_active_list, statistic_users_active
 from bot.BotClasses.Keyboards import keyboard
 from bot.BotClasses.Stage_handler import Stage
 
@@ -43,12 +44,29 @@ def damerau_levenshtein_distance(s1, s2):
     return d[lenstr1 - 1, lenstr2 - 1]
 
 
+async def boosts_handler(update, tg_client):
+    if "chat_boost" in update.keys():
+        user_id = update["chat_boost"]["source"]["user"]["id"]
+        tg_client.send_message(user_id, 'Вау, спасибо за подписку ❤️')
+        return True
+    if "removed_chat_boost" in update.keys():
+        user_id = update["chat_boost"]["source"]["user"]["id"]
+        tg_client.send_message(user_id, 'Кажется, твой буст пропал с канала 😭. Может быть начнем все сначала и ты '
+                                        'поставишь буст заново? Каждый пользователь может поставить до 4ех бустов, '
+                                        'мы с удовольствием примем все',
+                               buttons=keyboard('boost_keyboard', None).get_link())
+        return True
+    return False
+
+
+
 async def message_handler(update, tg_client, debug=False):
     ignore_list = ['channel_post', 'edited_channel_post', 'my_chat_member', 'edited_message']
     for i in ignore_list:
         if i in update.keys():
             return
-
+    if await boosts_handler(update, tg_client):
+        return
     message = Message(update)
     if not message:
         return
@@ -111,5 +129,6 @@ async def message_handler(update, tg_client, debug=False):
         return
     if message.callback_query_id:
         return
-    await tg_client.send_message(user.id, "Я не понимаю тебя :(", buttons=keyboard('main_keyboard', user).get_keyboard())
+    await tg_client.send_message(user.id, "Я не понимаю тебя :(",
+                                 buttons=keyboard('main_keyboard', user).get_keyboard())
     stage._set_status(0)

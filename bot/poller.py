@@ -18,12 +18,12 @@ class Poller:
             try:
                 offset = 0
                 while True:
-                    res = await self.tg_client.get_updates_in_objects(offset=offset, timeout=60)
+                    res = await self.tg_client.get_updates_in_objects(offset=offset, timeout=20)
                     for u in res['result']:
                         offset = u['update_id'] + 1
                         self.queue.put_nowait(u)
             except:
-                pass
+                print('Ошибка запроса обновлений:\n', traceback.format_exc())
 
     async def start(self):
         self._task = asyncio.create_task(self._worker())
