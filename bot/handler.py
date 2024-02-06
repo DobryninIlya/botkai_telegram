@@ -46,11 +46,11 @@ def damerau_levenshtein_distance(s1, s2):
 
 async def boosts_handler(update, tg_client):
     if "chat_boost" in update.keys():
-        user_id = update["chat_boost"]["source"]["user"]["id"]
+        user_id = update["boost"]["source"]["user"]["id"]
         tg_client.send_message(user_id, 'Вау, спасибо за подписку ❤️')
         return True
     if "removed_chat_boost" in update.keys():
-        user_id = update["chat_boost"]["source"]["user"]["id"]
+        user_id = update["boost"]["source"]["user"]["id"]
         tg_client.send_message(user_id, 'Кажется, твой буст пропал с канала 😭. Может быть начнем все сначала и ты '
                                         'поставишь буст заново? Каждый пользователь может поставить до 4ех бустов, '
                                         'мы с удовольствием примем все',
