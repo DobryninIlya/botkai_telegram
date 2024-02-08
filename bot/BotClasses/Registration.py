@@ -86,8 +86,8 @@ class Registration:
                 return
             return result['result']['status'] != 'left'
         except Exception as e:
-            # Обработка исключения
-            return False
+            print('Произошла ошибка проверки обязательной подписки:\n', traceback.format_exc(), flush=True)
+            return True
 
     async def processing(self):
         in_base = self._check_in_base()
