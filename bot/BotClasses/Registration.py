@@ -151,8 +151,7 @@ class Registration:
 
                     async with aiohttp.ClientSession() as session:
                         async with await session.post(BASE_URL_STAFF, data="prepodLogin=" + self.message.text.lower(),
-                                                      headers={'Content-Type': "application/x-www-form-urlencoded",
-                                                               "user-agent": "BOT RASPISANIE v.1"},
+                                                      headers={'Content-Type': "application/x-www-form-urlencoded"},
                                                       params={
                                                           "p_p_id": "pubLecturerSchedule_WAR_publicLecturerSchedule10",
                                                           "p_p_lifecycle": "2", "p_p_resource_id": "schedule"},
@@ -179,8 +178,7 @@ class Registration:
                         'https://kai.ru/for-staff/raspisanie?p_p_id=pubLecturerSchedule_WAR_publicLecturerSchedule10&p_p'
                         '_lifecycle=2&p_p_state=normal&p_p_mode=view&p_p_resource_id=getLecturersURL&p_p_cacheability='
                         'cacheLevelPage&p_p_col_id=column-1&p_p_col_count=1&query='+self.message.text.lower(),
-                                headers={'Content-Type': "application/x-www-form-urlencoded",
-                                         "user-agent": "BOT RASPISANIE v.1"},
+                                headers={'Content-Type': "application/x-www-form-urlencoded"},
                                 timeout=15) as response:
                             response = await response.json(content_type='text/html')
 
@@ -279,7 +277,7 @@ class Registration:
                 async with aiohttp.ClientSession() as session:
                     async with await session.post(
                             BASE_URL + "?p_p_id=pubStudentSchedule_WAR_publicStudentSchedule10&p_p_lifecycle=2&p_p_resource_id=getGroupsURL&query=",
-                            headers={'Content-Type': "application/x-www-form-urlencoded", "user-agent": "BOT RASPISANIE v.1"},
+                            headers={'Content-Type': "application/x-www-form-urlencoded"},
                             params={"p_p_id": "pubStudentSchedule_WAR_publicStudentSchedule10", "p_p_lifecycle": "2",
                                     "p_p_resource_id": "schedule"}, timeout=8) as response:
                         response = await response.json(content_type='text/html')

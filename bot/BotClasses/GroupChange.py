@@ -20,7 +20,8 @@ async def getGroupsResponse(groupNumber):
             if int(elem["group"]) == int(groupNumber):
                 return elem["id"], date_update
         return False, False
-    except:
+    except Exception as e:
+        print('Ошибка:\n', traceback.format_exc())
         return False, False
 
 
@@ -81,7 +82,7 @@ class GroupChange:
                 async with aiohttp.ClientSession() as session:
                     async with await session.post(
                             BASE_URL + "?p_p_id=pubStudentSchedule_WAR_publicStudentSchedule10&p_p_lifecycle=2&p_p_resource_id=getGroupsURL&query=",
-                            headers={'Content-Type': "application/x-www-form-urlencoded", "user-agent": "BOT RASPISANIE v.1"},
+                            headers={'Content-Type': "application/x-www-form-urlencoded"},
                             params={"p_p_id": "pubStudentSchedule_WAR_publicStudentSchedule10", "p_p_lifecycle": "2",
                                     "p_p_resource_id": "schedule"}, timeout=8) as response:
                         response = await response.json(content_type='text/html')

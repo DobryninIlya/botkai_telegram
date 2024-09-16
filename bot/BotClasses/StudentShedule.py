@@ -61,7 +61,7 @@ class StudentShedule:
             await self.alert_for_differences(self.user.group_name, result)
             return
 
-    async def _get_response(self):
+    async def   _get_response(self):
         sql = "SELECT * FROM saved_timetable WHERE groupp={}".format(self.group_id)
         cursor.execute(sql)
         result = cursor.fetchone()
@@ -69,11 +69,12 @@ class StudentShedule:
             try:
                 async with aiohttp.ClientSession() as session:
                     async with await session.post(self.BASE_URL, data="groupId=" + str(self.group_id),
-                                                  headers={'Content-Type': "application/x-www-form-urlencoded", "user-agent": "BOT RASPISANIE v.1"},
+                                                  headers={'content-Type': "application/x-www-form-urlencoded; charset=UTF-8"},
                                                   params={"p_p_id": "pubStudentSchedule_WAR_publicStudentSchedule10",
-                                                          "p_p_lifecycle": "2", "p_p_resource_id": "schedule"},
-                                                  timeout=3) as response:
+                                                          "p_p_lifecycle": "2", "p_p_resource_id": "schedule"}) as response:
                         response = await response.json(content_type='text/html')
+                if not response:
+                    return False, "Расписание не найдено"
                 try:
                     sql = "INSERT INTO saved_timetable VALUES ({}, '{}', '{}')".format(self.group_id, datetime.date.today(),
                                                                                        json.dumps(response))
@@ -99,12 +100,14 @@ class StudentShedule:
                 try:
                     async with aiohttp.ClientSession() as session:
                         async with await session.post(self.BASE_URL, data="groupId=" + str(self.group_id),
-                                                      headers={'Content-Type': "application/x-www-form-urlencoded", "user-agent": "BOT RASPISANIE v.1"},
+                                                      headers={'Content-Type': "application/x-www-form-urlencoded"},
                                                       params={
                                                           "p_p_id": "pubStudentSchedule_WAR_publicStudentSchedule10",
                                                           "p_p_lifecycle": "2", "p_p_resource_id": "schedule"},
                                                       timeout=3) as response:
+                            print(await response.text())
                             response = await response.json(content_type='text/html')
+                            print(response)
                     assert json.dumps(response), "Расписание имеет некорректную форму"
                     await self.timetable_differences(json.loads(timetable), response)
                     sql = "UPDATE saved_timetable SET shedule = '{}', date_update = '{}' WHERE groupp = {}".format(
@@ -253,10 +256,10 @@ class StudentShedule:
                     para_structure['dayDate'] = "2️гр. " + para_structure['dayDate']
                     para_list.append(para_structure)
                 elif dateinstr != -1:
-                    para_structure['dayDate'] = f"{day} " + para_structure['dayDate']
+                    para_structure['dayDate'] = f"{day} "
                     para_list.append(para_structure)
                 else:  # No sorted, but can view
-                    if dayDate not in ['чет', 'неч', 'чет\неч', 'неч\чет']:
+                    if dayDate not in ['чет', 'неч', 'чет\неч', 'неч\чет'] and dateinstr == -1:
                         para_list.append(para_structure)
             for para in para_list:
                 result += "➤ *{dayDate} ⌛{dayTime} {disciplType}* _{disciplName}_ {audNum} {buildNum}зд. \n".format(

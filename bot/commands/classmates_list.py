@@ -18,8 +18,7 @@ async def processor(user: User, message: Message, tg_client: TgClient, callback_
     i = 1
     async with aiohttp.ClientSession() as session:
         async with await session.post("https://kai.ru/infoClick/-/info/group?id={id}".format(id=user.group_id),
-                                      headers={'Content-Type': "application/x-www-form-urlencoded",
-                                               "user-agent": "BOT RASPISANIE v.1"}) as response:
+                                      headers={'content-Type': "application/x-www-form-urlencoded"}) as response:
             response = await response.text()
     soup = BeautifulSoup(response, 'lxml')
     list_students = soup.find(id="p_p_id_infoClick_WAR_infoClick10_")

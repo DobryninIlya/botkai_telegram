@@ -73,8 +73,7 @@ class TeacherShedule:
             try:
                 async with aiohttp.ClientSession() as session:
                     async with await session.post(self.BASE_URL_STAFF, data="prepodLogin=" + self.user.login.rstrip(),
-                                                  headers={'Content-Type': "application/x-www-form-urlencoded",
-                                                           "user-agent": "BOT RASPISANIE v.1"},
+                                                  headers={'Content-Type': "application/x-www-form-urlencoded"},
                                                   params={
                                                       "p_p_id": "pubLecturerSchedule_WAR_publicLecturerSchedule10",
                                                       "p_p_lifecycle": "2",
@@ -99,8 +98,7 @@ class TeacherShedule:
                     async with aiohttp.ClientSession() as session:
                         async with await session.post(self.BASE_URL_STAFF,
                                                       data="prepodLogin=" + self.user.login.rstrip(),
-                                                      headers={'Content-Type': "application/x-www-form-urlencoded",
-                                                               "user-agent": "BOT RASPISANIE v.1"},
+                                                      headers={'Content-Type': "application/x-www-form-urlencoded"},
                                                       params={
                                                           "p_p_id": "pubLecturerSchedule_WAR_publicLecturerSchedule10",
                                                           "p_p_lifecycle": "2",
