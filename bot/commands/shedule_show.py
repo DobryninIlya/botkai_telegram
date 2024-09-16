@@ -85,9 +85,19 @@ async def processor(user: User, message: Message, tg_client: TgClient, callback_
         try:
             if day_count == -2:
                 msg = "Список преподавателей:\n{}".format(shedule[:3000])
+                await tg_client.send_message(user.id, msg, buttons=keyboard('main_keyboard', user).get_keyboard(), parse_mode=True)
             else:
-                msg = "Расписание на {}\n {}".format(day_week.lower(), shedule[:3000])
-            await tg_client.send_message(user.id, msg, buttons=keyboard('main_keyboard', user).get_keyboard(), parse_mode=True)
+                separator = "═──────Четверг────────═"
+                shedule_parts = shedule.split(separator, 1)  # Разделяем расписание на две части по разделителю
+
+                # Первая часть расписания (до разделителя) отправляется в первом сообщении
+                msg = "Расписание на {}\n {}".format(day_week.lower(), shedule_parts[0])
+                await tg_client.send_message(user.id, msg, buttons=keyboard('main_keyboard', user).get_keyboard(), parse_mode=True)
+
+                # Вторая часть расписания (после разделителя) отправляется во втором сообщении
+                if len(shedule_parts) > 1:  # Если есть вторая часть расписания
+                    await tg_client.send_message(user.id, separator + shedule_parts[1],
+                                                 buttons=keyboard('main_keyboard', user).get_keyboard(), parse_mode=True)
         except:
             print('Ошибка:\n', traceback.format_exc())
     else:

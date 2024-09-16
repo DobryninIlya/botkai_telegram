@@ -4,7 +4,7 @@ import traceback
 import aiohttp, asyncio
 import datetime
 import json
-
+import re
 from pprint import pprint
 from .User import User
 from .Message import Message
@@ -258,7 +258,12 @@ class StudentShedule:
                 elif dateinstr != -1:
                     para_structure['dayDate'] = f"{day} "
                     para_list.append(para_structure)
-                else:  # No sorted, but can view
+                else:
+                    # Если содержит дату, то переходим к следующему
+                    regex = r"\d{2}\.\d{2}"
+                    if re.search(regex, dayDate):
+                        continue
+                    # No sorted, but can view
                     if dayDate not in ['чет', 'неч', 'чет\неч', 'неч\чет'] and dateinstr == -1:
                         para_list.append(para_structure)
             for para in para_list:
