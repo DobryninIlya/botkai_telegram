@@ -49,11 +49,11 @@ class StudentShedule:
                     if new[day] != old[day]:
                         for lesson in new[day]:
                             if lesson not in old[day]:
-                                result += "*(+)*:: `{dayNum}| [{dayTime}] {dayDate} {disciplName}`\n".format(
+                                result += "*(+)*:: `{dayNum}| [{daytime}] {daydate} {disciplname}`\n".format(
                                     dayNum=week_elements[lesson['dayNum']],
-                                    dayTime=lesson['dayTime'].rstrip(),
-                                    dayDate=lesson['dayDate'].rstrip(),
-                                    disciplName=lesson['disciplName'].rstrip()
+                                    daytime=lesson['daytime'].rstrip(),
+                                    daydate=lesson['daydate'].rstrip(),
+                                    disciplname=lesson['disciplname'].rstrip()
                                 )
                 except KeyError:
                     print("Ошибка в триггере обновления расписания. День:", day, flush=True)
@@ -66,6 +66,9 @@ class StudentShedule:
         cursor.execute(sql)
         result = cursor.fetchone()
         if result == None or result[2]=='{}':
+            return False, "Расписание не найдено. Если вы уверены, что оно есть - напишите t.me/dobryninilya"
+        if result == None or result[2]=='{}':
+
             try:
                 async with aiohttp.ClientSession() as session:
                     async with await session.post(self.BASE_URL, data="groupId=" + str(self.group_id),
@@ -96,32 +99,36 @@ class StudentShedule:
         else:
             date_update = result[1]
             timetable = result[2]
-            if date_update + datetime.timedelta(days=2) < self.today: # Если старое, то обновить и вернуть
-                try:
-                    async with aiohttp.ClientSession() as session:
-                        async with await session.post(self.BASE_URL, data="groupId=" + str(self.group_id),
-                                                      headers={'Content-Type': "application/x-www-form-urlencoded"},
-                                                      params={
-                                                          "p_p_id": "pubStudentSchedule_WAR_publicStudentSchedule10",
-                                                          "p_p_lifecycle": "2", "p_p_resource_id": "schedule"},
-                                                      timeout=3) as response:
-                            print(await response.text())
-                            response = await response.json(content_type='text/html')
-                            print(response)
-                    assert json.dumps(response), "Расписание имеет некорректную форму"
-                    await self.timetable_differences(json.loads(timetable), response)
-                    sql = "UPDATE saved_timetable SET shedule = '{}', date_update = '{}' WHERE groupp = {}".format(
-                        json.dumps(response), datetime.date.today(), self.group_id)
-                    cursor.execute(sql)
-                    connection.commit()
-                    return True, response
-                except asyncio.exceptions.TimeoutError:
-                    print("Ошибка таймаута в расписании", flush=True)
-                except:
-                    print('Ошибка (расписание):\n', traceback.format_exc(), flush=True)
-                    return True, json.loads(timetable)
-            else:
-                return True, json.loads(timetable)
+            # if date_update + datetime.timedelta(days=2) < self.today: # Если старое, то обновить и вернуть
+            #
+            #     try:
+            #         async with aiohttp.ClientSession() as session:
+            #             async with await session.post(self.BASE_URL, data="groupId=" + str(self.group_id),
+            #                                           headers={'Content-Type': "application/x-www-form-urlencoded"},
+            #                                           params={
+            #                                               "p_p_id": "pubStudentSchedule_WAR_publicStudentSchedule10",
+            #                                               "p_p_lifecycle": "2", "p_p_resource_id": "schedule"},
+            #                                           timeout=3) as response:
+            #                 if response.status != 200:
+            #                     return True, json.loads(timetable)
+            #                 print(await response.text())
+            #                 response = await response.json(content_type='text/html')
+            #                 print(response)
+            #
+            #         assert json.dumps(response), "Расписание имеет некорректную форму"
+            #         await self.timetable_differences(json.loads(timetable), response)
+            #         sql = "UPDATE saved_timetable SET shedule = '{}', date_update = '{}' WHERE groupname = {}".format(
+            #             json.dumps(response), datetime.date.today(), self.group_id)
+            #         cursor.execute(sql)
+            #         connection.commit()
+            #         return True, response
+            #     except asyncio.exceptions.TimeoutError:
+            #         print("Ошибка таймаута в расписании", flush=True)
+            #     except:
+            #         print('Ошибка (расписание):\n', traceback.format_exc(), flush=True)
+            #         return True, json.loads(timetable)
+            # else:
+            return True, json.loads(timetable)
         return
 
     def _get_week_shedule(self, response):
@@ -135,67 +142,73 @@ class StudentShedule:
             '7': 'Воскресенье',
         }
         result = ''
-        for key in sorted(response):
-            day = response[key]
-            result += "═──────{}{}────═\n".format(week_elements[key], '─' * (11 - len(week_elements[key])) if len(
-                week_elements[key]) < 11 else '')
-            for para in day:
-                if '---' in (para["audNum"]).rstrip():  # Экранирование множественных тире
-                    para["audNum"] = "--"
-                if '---' in (para["buildNum"]).rstrip():
-                    para["buildNum"] = "--"
-                para_structure = {
-                    'dayDate': para["dayDate"][:100].rstrip(),
-                    'disciplName': (para["disciplName"]).rstrip(),
-                    'audNum': para["audNum"].rstrip(),
-                    'buildNum': para["buildNum"].rstrip(),
-                    'dayTime': para["dayTime"][:5].rstrip(),
-                    'disciplType': para["disciplType"][:4].rstrip()
-                }
-                result += "➤ *{dayDate} ⌛{dayTime} {disciplType}* _{disciplName}_ {audNum} {buildNum}зд. \n".format(
-                    dayDate=para_structure['dayDate'],
-                    disciplType=para_structure['disciplType'],
-                    disciplName=para_structure['disciplName'],
-                    audNum=para_structure['audNum'],
-                    buildNum=para_structure['buildNum'],
-                    dayTime=para_structure['dayTime']
-                )
+        schedule = response
+        try:
+            for daynum in sorted(week_elements.keys()):
+                print(daynum)
+                day_schedule = [entry for entry in schedule if entry.get("daynum", "") == daynum]
+                if not day_schedule:
+                    continue
+                result += "═──────{}{}────═\n".format(week_elements[daynum], '─' * (11 - len(week_elements[daynum])) if len(
+                    week_elements[daynum]) < 11 else '')
+                for para in day_schedule:
+                    if '---' in (para.get("auditory", "")).rstrip():  # Экранирование множественных тире
+                        para["auditory"] = "--"
+                    if '---' in (para.get("building", "")).rstrip():
+                        para["building"] = "--"
+                    para_structure = {
+                        'daydate': para.get("daydate", "")[:100].rstrip(),
+                        'disciplname': (para.get("disciplname", "")).rstrip(),
+                        'auditory': para.get("auditory", "").rstrip(),
+                        'building': para.get("building", "").rstrip(),
+                        'daytime': para.get("daytime", "")[:5].rstrip(),
+                        'discipltype': para.get("discipltype", "")[:4].rstrip()
+                    }
+                    result += "➤ *{daydate} ⌛{daytime} {discipltype}* _{disciplname}_ {auditory} {building}зд. \n".format(
+                        daydate=para_structure['daydate'],
+                        discipltype=para_structure['discipltype'],
+                        disciplname=para_structure['disciplname'],
+                        auditory=para_structure['auditory'],
+                        building=para_structure['building'],
+                        daytime=para_structure['daytime']
+                    )
+        except:
+            print('Ошибка:\n', traceback.format_exc())
         return result
 
     def _get_teacher_list(self, response):
         prepodList = []
         resultList = []
-        prepodElement = {'disciplType': None, 'disciplName': None,
-                         'prepodName': None}
-        for key in response:
-            for elem in response[key]:
-                prepodElement = {'disciplType': elem["disciplType"].rstrip(),
-                                 'disciplName': elem["disciplName"].rstrip(),
-                                 'prepodName': elem["prepodName"].rstrip()}
-                if elem["prepodName"].rstrip() == "":
-                    prepodElement['prepodName'] = ":не-задан:"
-                prepodList.append(prepodElement)
-        prepodList.sort(key=lambda prepodElement: (prepodElement['disciplName'], prepodElement['prepodName']))
+        prepodElement = {'discipltype': None, 'disciplname': None,
+                         'prepodfio': None}
+        for elem in response:
+            prepodElement = {'discipltype': elem.get("discipltype", "").rstrip(),
+                             'disciplname': elem.get("disciplname", "").rstrip(),
+                             'prepodfio': elem.get("prepodfio", "").rstrip()}
+            if elem.get("prepodfio", "").rstrip() == "":
+                prepodElement['prepodfio'] = ":не-задан:"
+            prepodList.append(prepodElement)
+        prepodList.sort(key=lambda prepodElement: (prepodElement['disciplname'], prepodElement['prepodfio']))
         i = 0
         for prepod in prepodList:
-            disciplType = []
-            disciplType.append(prepod['disciplType'])
+            discipltype = []
+            discipltype.append(prepod['discipltype'])
             try:
-                while prepod['prepodName'] == prepodList[i + 1]['prepodName']:
-                    if prepodList[i + 1]['disciplType'] not in disciplType:
-                        disciplType.append(prepodList[i + 1]['disciplType'])
+                while prepod['prepodfio'] == prepodList[i + 1]['prepodfio']:
+                    if prepodList[i + 1]['discipltype'] not in discipltype:
+                        discipltype.append(prepodList[i + 1]['discipltype'])
                     prepodList.pop(i)
             except:
                 pass
             i += 1
-            if disciplType:
+            if discipltype:
                 st = ""
-                for discipl in disciplType:
+                for discipl in discipltype:
                     st += str(discipl).rstrip() + ", "
                 st = st[:-2]
-                prepod['disciplType'] = st
-            res = "👨‍🏫 |" + str(prepod['disciplType']) + "| *" + (
-                str(prepod['disciplName'])).rstrip() + "* \n`" + str(prepod['prepodName']).title() + "`"
+                prepod['discipltype'] = st
+            res = "👨‍🏫 |" + str(prepod['discipltype']) + "| *" + (
+                str(prepod['disciplname'])).rstrip() + "* \n`" + str(prepod['prepodfio']).title() + "`"
             if res not in resultList:
                 resultList.append(res)
         result = ''
@@ -216,7 +229,7 @@ class StudentShedule:
                 print(self.today.isocalendar()[1] + self.chetn % 2)
                 return True if (int(self.today.isocalendar()[1] + self.chetn) % 2) == 0 else False  # Четность недели
             now = datetime.date.today() + datetime.timedelta(days=tomorrow)
-            response = response[str(datetime.date(now.year, now.month, now.day).isoweekday())]
+            response = find_elements_by_daynum(response, str(datetime.date(now.year, now.month, now.day).isoweekday()))
             result = ''
             month = now.month
             if month < 10:
@@ -224,57 +237,57 @@ class StudentShedule:
             day = str(now.day) + "." + str(month)
             para_list = []
             for elem in response:
-                dayDate = elem["dayDate"].rstrip()
+                daydate = elem.get("daydate", "").rstrip()
 
-                if '---' in (elem["audNum"]).rstrip():  # Экранирование множественных тире
-                    elem["audNum"] = "-нет-"
-                if '---' in (elem["buildNum"]).rstrip():
-                    elem["buildNum"] = "-нет-"
+                if '---' in (elem["auditory"]).rstrip():  # Экранирование множественных тире
+                    elem["auditory"] = "-нет-"
+                if '---' in (elem["building"]).rstrip():
+                    elem["building"] = "-нет-"
 
                 para_structure = {
-                    'dayDate': elem["dayDate"][:100].rstrip(),
-                    'disciplName': elem["disciplName"].rstrip(),
-                    'audNum': elem["audNum"].rstrip(),
-                    'buildNum': elem["buildNum"].rstrip(),
-                    'dayTime': elem["dayTime"][:5].rstrip(),
-                    'disciplType': elem["disciplType"][:4].rstrip()
+                    'daydate': elem.get("daydate", "")[:100].rstrip(),
+                    'disciplname': elem.get("disciplname", "").rstrip(),
+                    'auditory': elem.get("auditory", "").rstrip(),
+                    'building': elem.get("building", "").rstrip(),
+                    'daytime': elem.get("daytime", "")[:5].rstrip(),
+                    'discipltype': elem.get("discipltype", "")[:4].rstrip()
                 }
-                dateinstr = str((elem["dayDate"]).rstrip()).find(day)
+                dateinstr = str((elem.get("daydate", "")).rstrip()).find(day)
                 # print((self.today.isocalendar()[1] + self.chetn) % 2, self.today.isocalendar()[1])
                 if ((now.isocalendar()[1] + self.chetn) % 2) == 0:  # Если неделя четная
                     chetn = True
                 else:
                     chetn = False
-                if dayDate == 'чет' and chetn:
+                if daydate == 'чет' and chetn:
                     para_list.append(para_structure)
-                elif dayDate == 'неч' and not chetn:
+                elif daydate == 'неч' and not chetn:
                     para_list.append(para_structure)
-                elif dayDate == 'чет\неч' and chetn or dayDate == 'неч\чет' and not chetn:
-                    para_structure['dayDate'] = "1️гр. " + para_structure['dayDate']
+                elif daydate == 'чет\неч' and chetn or daydate == 'неч\чет' and not chetn:
+                    para_structure['daydate'] = "1️гр. " + para_structure['daydate']
                     para_list.append(para_structure)
-                elif dayDate == 'неч\чет' and chetn or dayDate == 'чет\неч' and not chetn:
-                    para_structure['dayDate'] = "2️гр. " + para_structure['dayDate']
+                elif daydate == 'неч\чет' and chetn or daydate == 'чет\неч' and not chetn:
+                    para_structure['daydate'] = "2️гр. " + para_structure['daydate']
                     para_list.append(para_structure)
                 elif dateinstr != -1:
-                    para_structure['dayDate'] = f"{day} "
+                    para_structure['daydate'] = f"{day} "
                     para_list.append(para_structure)
                 else:
                     # Если содержит дату, то переходим к следующему
                     regex = r"\d{2}\.\d{2}"
-                    if re.search(regex, dayDate):
+                    if re.search(regex, daydate):
                         continue
                     # No sorted, but can view
-                    if dayDate not in ['чет', 'неч', 'чет\неч', 'неч\чет'] and dateinstr == -1:
+                    if daydate not in ['чет', 'неч', 'чет\неч', 'неч\чет'] and dateinstr == -1:
                         para_list.append(para_structure)
             for para in para_list:
-                result += "➤ *{dayDate} ⌛{dayTime} {disciplType}* _{disciplName}_ {audNum} {buildNum}зд. \n".format(
-                # result += "➤ {dayDate} ⌛{dayTime} {disciplType} {audNum} {buildNum}зд.```\n{disciplName}``` \n".format(
-                    dayDate=para['dayDate'],
-                    disciplType=para['disciplType'],
-                    disciplName=para['disciplName'],
-                    audNum=para['audNum'],
-                    buildNum=para['buildNum'],
-                    dayTime=para['dayTime']
+                result += "➤ *{daydate} ⌛{daytime} {discipltype}* _{disciplname}_ {auditory} {building}зд. \n".format(
+                # result += "➤ {daydate} ⌛{daytime} {discipltype} {auditory} {building}зд.```\n{disciplname}``` \n".format(
+                    daydate=para['daydate'],
+                    discipltype=para['discipltype'],
+                    disciplname=para['disciplname'],
+                    auditory=para['auditory'],
+                    building=para['building'],
+                    daytime=para['daytime']
                 )
             return result
         except ConnectionError:
@@ -286,3 +299,6 @@ class StudentShedule:
         except:
             print('Ошибка:\n', traceback.format_exc())
             return ""
+
+def find_elements_by_daynum(response, daynum):
+    return [elem for elem in response if elem.get("daynum") == daynum]

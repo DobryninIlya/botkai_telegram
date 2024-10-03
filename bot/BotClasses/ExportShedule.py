@@ -38,13 +38,13 @@ except:
 
 
 class ShedRow(object):
-    def __init__(self, dayTime, dayDate, disciplName, disciplType, audNum, buildNum, prepodName):
-        self.dayTime = dayTime
-        self.dayDate = dayDate
-        self.disciplName = disciplName
-        self.disciplType = disciplType
-        self.audNum = audNum
-        self.buildNum = buildNum
+    def __init__(self, daytime, daydate, disciplname, discipltype, auditory, building, prepodName):
+        self.daytime = daytime
+        self.daydate = daydate
+        self.disciplname = disciplname
+        self.discipltype = discipltype
+        self.auditory = auditory
+        self.building = building
         self.prepodName = prepodName
 
 
@@ -57,7 +57,7 @@ class ExportShedule(StudentShedule):
         isNormal, response = await super()._get_response()
         if not response:
             return False
-        days_in_week = list(response.keys())
+        days_in_week = get_unique_daynums(response)
         days_in_week.sort()
 
         current_week = 0
@@ -65,7 +65,7 @@ class ExportShedule(StudentShedule):
             if str(current_date.isoweekday()) not in days_in_week:
                 current_date += datetime.timedelta(days=1)
                 continue
-            for key in days_in_week:
+            for key in response:
                 if (current_date.month == 12 and current_date.day == 30) or (
                         current_date.month == 7 and current_date.day == 1):
                     break
@@ -73,34 +73,34 @@ class ExportShedule(StudentShedule):
                                                    current_date.day).isocalendar()[
                                          1] + self.chetn) % 2 else True  # Если True чет, False - неч
 
-                for row in response[key]:
-                    dayDate = row["dayDate"].rstrip().lower()
+                for row in response:
+                    daydate = row.get("daydate", "").rstrip().lower()
                     prefix = ""
 
-                    if (dayDate == 'чет' and not chetnost) or (dayDate == 'неч' and chetnost):
+                    if (daydate == 'чет' and not chetnost) or (daydate == 'неч' and chetnost):
                         continue
-                    elif dayDate == 'чет/неч':
+                    elif daydate == 'чет/неч':
                         if chetnost:
                             prefix = " (1) гр."
                         else:
                             prefix = " (2) гр."
-                    elif dayDate == 'неч/чет':
+                    elif daydate == 'неч/чет':
                         if chetnost:
                             prefix = " (2) гр."
                         else:
                             prefix = " (1) гр."
 
                     e = Event()
-                    tt = row["dayTime"].rstrip() if len(row["dayTime"].rstrip()) < 6 else row["dayTime"].rstrip()[:5]
+                    tt = row.get("daytime", "").rstrip() if len(row.get("daytime", "").rstrip()) < 6 else row.get("daytime", "").rstrip()[:5]
                     tt = tt_dict.get(tt, tt)
                     begin_time = str(current_date) + " {}:00".format(tt)
-                    # end_time = str(current_date) + " {}:00".format(time_dict[row["dayTime"].rstrip()])
-                    e.name = prefix + row["disciplType"].rstrip().upper() + " " + row["disciplName"].rstrip()
+                    # end_time = str(current_date) + " {}:00".format(time_dict[row.get("daytime", "").rstrip()])
+                    e.name = prefix + row.get("discipltype", "").rstrip().upper() + " " + row.get("disciplname", "").rstrip()
                     e.begin = begin_time
                     e.duration = datetime.timedelta(
-                        minutes=190 if row["disciplType"].rstrip().upper() == 'Л.Р.' else 90)
-                    e.location = "В {} ауд. {} зд".format(row["audNum"].rstrip(), row["buildNum"].rstrip())
-                    e.description = "В {} ауд. {} зд".format(row["audNum"].rstrip(), row["buildNum"].rstrip())
+                        minutes=190 if row.get("discipltype", "").rstrip().upper() == 'Л.Р.' else 90)
+                    e.location = "В {} ауд. {} зд".format(row.get("auditory", "").rstrip(), row.get("building", "").rstrip())
+                    e.description = "В {} ауд. {} зд".format(row.get("auditory", "").rstrip(), row.get("building", "").rstrip())
                     c.events.add(e)
                 current_date = current_date + datetime.timedelta(days=1)
                 if str(current_date.isoweekday()) not in days_in_week:
@@ -124,42 +124,42 @@ class ExportShedule(StudentShedule):
             lis.append("Понедельник")
             for day in elem:
                 lis.append(
-                    ShedRow(day["dayTime"], day["dayDate"], day["disciplName"], day["disciplType"], day["audNum"],
-                            day["buildNum"], day["prepodName"]))
+                    ShedRow(day["daytime"], day["daydate"], day["disciplname"], day["discipltype"], day["auditory"],
+                            day["building"], day["prepodName"]))
             elem = response[str(2)]
             lis.append("Вторник")
             for day in elem:
                 lis.append(
-                    ShedRow(day["dayTime"], day["dayDate"], day["disciplName"], day["disciplType"], day["audNum"],
-                            day["buildNum"], day["prepodName"]))
+                    ShedRow(day["daytime"], day["daydate"], day["disciplname"], day["discipltype"], day["auditory"],
+                            day["building"], day["prepodName"]))
             rows = len(lis)
             elem = response[str(3)]
             lis.append("Среда")
             for day in elem:
                 lis.append(
-                    ShedRow(day["dayTime"], day["dayDate"], day["disciplName"], day["disciplType"], day["audNum"],
-                            day["buildNum"], day["prepodName"]))
+                    ShedRow(day["daytime"], day["daydate"], day["disciplname"], day["discipltype"], day["auditory"],
+                            day["building"], day["prepodName"]))
             rows = len(lis)
             elem = response[str(4)]
             lis.append("Четверг")
             for day in elem:
                 lis.append(
-                    ShedRow(day["dayTime"], day["dayDate"], day["disciplName"], day["disciplType"], day["audNum"],
-                            day["buildNum"], day["prepodName"]))
+                    ShedRow(day["daytime"], day["daydate"], day["disciplname"], day["discipltype"], day["auditory"],
+                            day["building"], day["prepodName"]))
             rows = len(lis)
             elem = response[str(5)]
             lis.append("Пятница")
             for day in elem:
                 lis.append(
-                    ShedRow(day["dayTime"], day["dayDate"], day["disciplName"], day["disciplType"], day["audNum"],
-                            day["buildNum"], day["prepodName"]))
+                    ShedRow(day["daytime"], day["daydate"], day["disciplname"], day["discipltype"], day["auditory"],
+                            day["building"], day["prepodName"]))
             rows = len(lis)
             elem = response[str(6)]
             lis.append("Суббота")
             for day in elem:
                 lis.append(
-                    ShedRow(day["dayTime"], day["dayDate"], day["disciplName"], day["disciplType"], day["audNum"],
-                            day["buildNum"], day["prepodName"]))
+                    ShedRow(day["daytime"], day["daydate"], day["disciplname"], day["discipltype"], day["auditory"],
+                            day["building"], day["prepodName"]))
         except:
             pass
         return lis
@@ -177,10 +177,19 @@ class ExportShedule(StudentShedule):
 
             else:
                 par = wordDocument.add_paragraph(
-                    (str(day.dayTime)).rstrip() + " " + ((str(day.dayDate)).rstrip()).ljust(8) + " " + str(
-                        day.disciplName) + " " + (str(day.disciplType)).upper() + " " + (
-                        str(day.audNum)).rstrip() + " ауд  " + (str(day.buildNum)).rstrip() + "зд.  " + (
+                    (str(day.daytime)).rstrip() + " " + ((str(day.daydate)).rstrip()).ljust(8) + " " + str(
+                        day.disciplname) + " " + (str(day.discipltype)).upper() + " " + (
+                        str(day.auditory)).rstrip() + " ауд  " + (str(day.building)).rstrip() + "зд.  " + (
                         str(day.prepodName)).rstrip())
                 # par.style = "No Spacing"
         wordDocument.save(path + str(self.group_id) + ".docx")
         return path + str(self.group_id) + ".docx"
+
+
+def get_unique_daynums(objects):
+    unique_daynums = set()
+    for obj in objects:
+        daynum = obj.get("daynum")
+        if daynum:
+            unique_daynums.add(daynum)
+    return list(unique_daynums)

@@ -17,7 +17,7 @@ async def getGroupsResponse(groupNumber):
         date_update = result_query[1]
         result = json.loads(result)
         for elem in result:
-            if int(elem["group"]) == int(groupNumber):
+            if int(elem["groupNum"]) == int(groupNumber):
                 return elem["id"], date_update
         return False, False
     except Exception as e:

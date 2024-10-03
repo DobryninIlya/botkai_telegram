@@ -9,6 +9,8 @@ from clients.tg.api import TgClient
 async def processor(user: User, message: Message, tg_client: TgClient, callback_query=False, stage=None):
     export = ExportShedule(user, message, tg_client)
     ics_export = await export.makeFile(2)
+    await tg_client.send_message(user.id, "Данный функционал здесь более не поддерживается. Ожидайте эту функцию в КапиПаре capypara.kai.ru", parse_mode=True)
+    return
     if not ics_export:
         await tg_client.send_message(user.id, "*Ошибка!*\n_Расписание не обнаружено_", parse_mode=True)
     if message.button == 'export_ics':

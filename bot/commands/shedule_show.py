@@ -69,14 +69,14 @@ async def processor(user: User, message: Message, tg_client: TgClient, callback_
         return
     elif message.button == 'shed_week':
         day = int(message.button_data)
-        msg = f"_Расписание на_ *{week[day].lower()}*\n"
+        msg = f"_Расписание на ближайшую(-ий)_ *{week[day].lower()}*\n"
         day_count = getWeekDayNum(day)
-        shedule = await StudentShedule(user, message, tg_client).showTimetable(user.group_id, day_count)
+        shedule = await StudentShedule(user, message, tg_client).showTimetable(user.group_name, day_count)
         msg += shedule if shedule else "Занятий нет"
         await tg_client.edit_message(user.id, message.message_id,
                                      keyboard('week_shedule', user).get_inline_keyboard(), msg, parse_mode=True)
         return
-    shedule = await StudentShedule(user, message, tg_client).showTimetable(user.group_id, day_count)
+    shedule = await StudentShedule(user, message, tg_client).showTimetable(user.group_name, day_count)
     if day_count == -3:
         msg = 'Четная' if shedule else 'Нечетная'
         await tg_client.send_message(user.id, msg, buttons=keyboard('main_keyboard', user).get_keyboard(), parse_mode=True)
