@@ -1,4 +1,5 @@
 import json
+import os
 import traceback
 from cachetools import TTLCache
 from datetime import datetime
@@ -264,32 +265,14 @@ class Registration:
             return False
 
     async def _show_groupId(self, groupNumber):
-        BASE_URL = 'https://kai.ru/raspisanie'
+        BASE_URL = 'https://schedule-bot.kai.ru/api/schedule_public/groups?token=' + os.getenv('SCHEDULE_BOT_TOKEN')
         try:
-            group, date_update = await getGroupsResponse(groupNumber)
-            if not group:
-                return False
-            today = datetime.date.today()
-            date = datetime.date(today.year, today.month, today.day)
-            if date_update == date:
-                return group
-            else:
-                async with aiohttp.ClientSession() as session:
-                    async with await session.post(
-                            BASE_URL + "?p_p_id=pubStudentSchedule_WAR_publicStudentSchedule10&p_p_lifecycle=2&p_p_resource_id=getGroupsURL&query=",
-                            headers={'Content-Type': "application/x-www-form-urlencoded"},
-                            params={"p_p_id": "pubStudentSchedule_WAR_publicStudentSchedule10", "p_p_lifecycle": "2",
-                                    "p_p_resource_id": "schedule"}, timeout=8) as response:
-                        response = await response.json(content_type='text/html')
-                if str(response.status_code) != '200':
-                    raise ConnectionError
-                cursor.execute("UPDATE saved_timetable SET shedule = '{}', date_update = '{}' WHERE groupp = 1".format(
-                    json.dumps(response), date))
-                connection.commit()
-            group, _ = await getGroupsResponse(groupNumber)
-            if group:
-                return group
-            print('Ошибка:\n', traceback.format_exc())
+            async with aiohttp.ClientSession() as session:
+                async with await session.get(BASE_URL) as response:
+                    response = await response.json()
+            for elem in response:
+                if elem["groupNum"] == groupNumber:
+                    return elem["id"]
             return False
         except aiohttp.ServerConnectionError:
             return False, "&#9888;Ошибка подключения к серверам.&#9888; \n Вероятно, на стороне kai.ru произошел сбой. Вам необходимо продолжить регистрацию (ввод номера группы) как только сайт kai.ru станет доступным."
