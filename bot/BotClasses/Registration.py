@@ -269,9 +269,9 @@ class Registration:
         try:
             async with aiohttp.ClientSession() as session:
                 async with await session.get(BASE_URL) as response:
-                    response = await response.json()
-            for elem in response:
-                if elem["groupNum"] == groupNumber:
+                    response = await response.json(content_type='text/plain')
+            for elem in response['result']['groups']:
+                if elem["groupNum"] == str(groupNumber):
                     return elem["id"]
             return False
         except aiohttp.ServerConnectionError:
