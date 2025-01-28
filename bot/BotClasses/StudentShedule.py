@@ -11,6 +11,9 @@ from .Message import Message
 from .Database_connection import cursor, connection, cursorR, conn
 from clients.tg.api import TgClient
 
+domain = 'https://schedule-bot.kai.ru'
+schedule_path = '/api/schedule_public/'
+
 class StudentShedule:
     def __init__(self, user: User, message: Message, tg_client: TgClient):
         self.user = user
@@ -61,44 +64,57 @@ class StudentShedule:
             await self.alert_for_differences(self.user.group_name, result)
             return
 
-    async def   _get_response(self):
-        sql = "SELECT * FROM saved_timetable WHERE groupp={}".format(self.group_id)
-        cursor.execute(sql)
-        result = cursor.fetchone()
-        if result == None or result[2]=='{}':
-            return False, "Расписание не найдено. Если вы уверены, что оно есть - напишите t.me/dobryninilya"
-        if result == None or result[2]=='{}':
-
-            try:
-                async with aiohttp.ClientSession() as session:
-                    async with await session.post(self.BASE_URL, data="groupId=" + str(self.group_id),
-                                                  headers={'content-Type': "application/x-www-form-urlencoded; charset=UTF-8"},
-                                                  params={"p_p_id": "pubStudentSchedule_WAR_publicStudentSchedule10",
-                                                          "p_p_lifecycle": "2", "p_p_resource_id": "schedule"}) as response:
-                        response = await response.json(content_type='text/html')
-                if not response:
-                    return False, "Расписание не найдено"
-                try:
-                    sql = "INSERT INTO saved_timetable VALUES ({}, '{}', '{}')".format(self.group_id, datetime.date.today(),
-                                                                                       json.dumps(response))
-                    cursor.execute(sql)
-                    connection.commit()
-                except:
-                    sql = "UPDATE saved_timetable SET shedule = '{}', date_update='{}' WHERE groupp ={}".format(json.dumps(response),
-                                                                                       datetime.date.today(), self.group_id)
-                    cursor.execute(sql)
-                    connection.commit()
-                return True, response
-            except ConnectionError as err:
-                return False, "&#9888;Ошибка подключения к серверу типа ConnectionError. Вероятно, сервера КАИ были выведены из строя.&#9888;"
-            except aiohttp.ServerTimeoutError as err:
-                return False, "&#9888;Ошибка подключения к серверу типа Timeout. Вероятно, сервера КАИ перегружены.&#9888;"
-            except:
-                print('Ошибка:\n', traceback.format_exc())
-                return False, "&#9888;Произошла непредвиденная ошибка :( &#9888;"
-        else:
-            date_update = result[1]
-            timetable = result[2]
+    async def   _get_response(self, group_id):
+        try:
+            async with aiohttp.ClientSession() as session: # + os.getenv('SCHEDULE_BOT_TOKEN')
+                async with await session.get(domain+schedule_path+str(group_id) + "?token=" + os.getenv('SCHEDULE_BOT_TOKEN')) as response:
+                    text = await response.text()
+                    response_json = json.loads(text)
+            return True, response_json
+        except ConnectionError as err:
+            return False, "&#9888;Ошибка подключения к серверу типа ConnectionError. Вероятно, сервера КАИ были выведены из строя.&#9888;"
+        except aiohttp.ServerTimeoutError as err:
+            return False, "&#9888;Ошибка подключения к серверу типа Timeout. Вероятно, сервера КАИ перегружены.&#9888;"
+        except:
+            print('Ошибка:\n', traceback.format_exc())
+            return False, "&#9888;Произошла непредвиденная ошибка :( &#9888;"
+        # sql = "SELECT * FROM saved_timetable WHERE groupp={}".format(self.group_id)
+        # cursor.execute(sql)
+        # result = cursor.fetchone()
+        # if result == None or result[2]=='{}':
+        #     return False, "Расписание не найдено. Если вы уверены, что оно есть - напишите t.me/dobryninilya"
+        # if result == None or result[2]=='{}':
+        #
+        #     try:
+        #         async with aiohttp.ClientSession() as session:
+        #             async with await session.post(self.BASE_URL, data="groupId=" + str(self.group_id),
+        #                                           headers={'content-Type': "application/x-www-form-urlencoded; charset=UTF-8"},
+        #                                           params={"p_p_id": "pubStudentSchedule_WAR_publicStudentSchedule10",
+        #                                                   "p_p_lifecycle": "2", "p_p_resource_id": "schedule"}) as response:
+        #                 response = await response.json(content_type='text/html')
+        #         if not response:
+        #             return False, "Расписание не найдено"
+        #         try:
+        #             sql = "INSERT INTO saved_timetable VALUES ({}, '{}', '{}')".format(self.group_id, datetime.date.today(),
+        #                                                                                json.dumps(response))
+        #             cursor.execute(sql)
+        #             connection.commit()
+        #         except:
+        #             sql = "UPDATE saved_timetable SET shedule = '{}', date_update='{}' WHERE groupp ={}".format(json.dumps(response),
+        #                                                                                datetime.date.today(), self.group_id)
+        #             cursor.execute(sql)
+        #             connection.commit()
+        #         return True, response
+        #     except ConnectionError as err:
+        #         return False, "&#9888;Ошибка подключения к серверу типа ConnectionError. Вероятно, сервера КАИ были выведены из строя.&#9888;"
+        #     except aiohttp.ServerTimeoutError as err:
+        #         return False, "&#9888;Ошибка подключения к серверу типа Timeout. Вероятно, сервера КАИ перегружены.&#9888;"
+        #     except:
+        #         print('Ошибка:\n', traceback.format_exc())
+        #         return False, "&#9888;Произошла непредвиденная ошибка :( &#9888;"
+        # else:
+        #     date_update = result[1]
+        #     timetable = result[2]
             # if date_update + datetime.timedelta(days=2) < self.today: # Если старое, то обновить и вернуть
             #
             #     try:
@@ -128,8 +144,7 @@ class StudentShedule:
             #         print('Ошибка (расписание):\n', traceback.format_exc(), flush=True)
             #         return True, json.loads(timetable)
             # else:
-            return True, json.loads(timetable)
-        return
+            # return True, json.loads(timetable)
 
     def _get_week_shedule(self, response):
         week_elements = {
@@ -218,18 +233,20 @@ class StudentShedule:
 
     async def showTimetable(self, groupId: int, tomorrow=0):
         try:
-            isNormal, response = await self._get_response()
+
+            isNormal, response = await self._get_response(groupId)
+            schedule = response['result']['schedule']
             if not isNormal:
                 return response
             if tomorrow == -1:
-                return self._get_week_shedule(response)  # Расписание по дню недели
+                return self._get_week_shedule(schedule)  # Расписание по дню недели
             elif tomorrow == -2:
-                return self._get_teacher_list(response)  # Список преподов
+                return self._get_teacher_list(schedule)  # Список преподов
             elif tomorrow == -3:
                 print(self.today.isocalendar()[1] + self.chetn % 2)
                 return True if (int(self.today.isocalendar()[1] + self.chetn) % 2) == 0 else False  # Четность недели
             now = datetime.date.today() + datetime.timedelta(days=tomorrow)
-            response = find_elements_by_daynum(response, str(datetime.date(now.year, now.month, now.day).isoweekday()))
+            response = find_elements_by_daynum(schedule, str(datetime.date(now.year, now.month, now.day).isoweekday()))
             result = ''
             month = now.month
             if month < 10:
